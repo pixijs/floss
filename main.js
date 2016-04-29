@@ -23,7 +23,7 @@ function createWindow () {
     mainWindow.webContents.on('did-finish-load', function() {
 
         mainWindow.webContents.send('ping', JSON.stringify({
-            args: process.argv
+            args: process.argv.slice(2)
         }));
     });
 

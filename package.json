@@ -1,13 +1,16 @@
 {
   "name": "jibo-test",
   "version": "0.1.0",
+  "bin": {
+    "jibotest": "./bin/jibotest"
+  },
   "main": "main.js",
   "license": "UNLICENSED",
   "private": true,
-  "devDependencies": {
+  "dependencies": {
     "chai": "^3.5.0",
+    "commander": "^2.9.0",
     "electron-prebuilt": "^0.37.7",
-    "mocha": "^2.4.5",
-    "should": "^8.1.1"
+    "mocha": "^2.4.5"
   }
 }
