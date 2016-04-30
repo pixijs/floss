@@ -15,26 +15,19 @@ class CommandLineEntry {
     }
 
     let testPath = parsedArgs.path;
+    let spawn = require('child_process').spawn;
+    let electronPath = require( 'electron-prebuilt' );
 
-    if(parsedArgs.debug) {
-      // if headful state, launch the electron project
-      let spawn = require('child_process').spawn;
-      let electronPath = require( 'electron-prebuilt' );
+    let jiboTestElectronProjectPath = path.join(__dirname, "../");
+    let args = JSON.stringify({
+      'testPath' : testPath,
+      'debug': !!parsedArgs.debug
+    });
 
-      let jiboTestPath = path.join(__dirname, "../");
-      let electronProcess = spawn(electronPath, [jiboTestPath, testPath], { stdio: 'inherit' } );
-
-      electronProcess.on('close', function (code) {
-          console.log('process exit code ' + code);
-      });
-    } else {
-      // if headless state, run via command line only
-      let RunMocha = require('../src/RunMocha');
-
-      let mochaArgs = {'args': [testPath]};
-      let mochaArgsString = JSON.stringify(mochaArgs);
-      RunMocha.runHeadless(mochaArgsString);
-    }
+    let electronProcess = spawn(electronPath, [jiboTestElectronProjectPath, args], { stdio: 'inherit' } );
+    electronProcess.on('close', function (code) {
+        console.log('process exit code ' + code);
+    });
   }
 
   static parseCommandLineArgs(cmdLineArgs) {

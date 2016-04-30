@@ -6,25 +6,37 @@ const app = electron.app;
 // Module to create native browser window.
 var BrowserWindow = electron.BrowserWindow;
 
+var ipc = electron.ipcMain;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 var mainWindow;
 function createWindow () {
 
+    let argsString = process.argv.slice(2)[0];
+    let argsObj = JSON.parse(argsString);
+
     // Create the browser window.
-    mainWindow = new BrowserWindow({width: 800, height: 600, show: true});
+    mainWindow = new BrowserWindow({width: 800, height: 600, show: argsObj.debug});
+
+    ipc.on('mocha-done', function (event, code) {
+      console.log("mocha tests done");
+      app.quit();
+    });
+
+    ipc.on('mocha-error', function (event, data) {
+      console.log("mocha tests error");
+      app.quit();
+    });
 
     // and load the index.html of the app.
     mainWindow.loadURL('file://' + __dirname + '/index.html');
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
     mainWindow.webContents.on('did-finish-load', function() {
-
-        mainWindow.webContents.send('ping', JSON.stringify({
-            args: process.argv.slice(2)
-        }));
+        mainWindow.webContents.send('ping', JSON.stringify(argsObj));
     });
 
     // Emitted when the window is closed.

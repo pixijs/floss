@@ -12,48 +12,89 @@ global.assert = chai.assert;
 global.expect = chai.expect;
 
 class RunMocha {
-  static runHeadful(message) {
+  static runHeadful(testPath) {
     mocha.setup({
       ui:'bdd',
       enableTimeouts: false
     });
 
-    // include the test directories / files passed in via parameters
-    let argv = JSON.parse(message);
-
-    if(argv.args) {
-      let testPath = argv.args[0];
-
-      if(fs.existsSync(testPath)) {
-        // if a single directory, find the index.js file and include that
-        if(fs.statSync(testPath).isDirectory()) {
-
-          let indexFile = path.join(testPath, "index.js");
-          console.log("checking for index file: ", indexFile);
-          if(fs.existsSync(indexFile)) {
-            require(indexFile);
-          } else {
-            console.error("no index.js file found in directory: " + testPath);
-          }
-        }
-        // if it is a single file, only include that file
-        else {
-          require(testPath);
-        }
-      }
-    }
+    this.addFile(testPath, function(pathToAdd){
+      require(testPath);
+    });
 
     mocha.run();
   }
 
-  static runHeadless(message) {
-    let argv = JSON.parse(message);
-    let file = argv.args[0];
+  static runHeadless(testPath) {
+    this.redirectOutputToConsole();
 
+    mocha.setup({
+      ui:'tdd'
+    });
     let Mocha = require('mocha');
-    let mochaInst = new Mocha('bbd');
-    mochaInst.files.push(path.resolve(file));
-    mochaInst.run();
+    let mochaInst = new Mocha();
+    mochaInst.ui('tdd');
+    mochaInst.useColors(true);
+
+    this.addFile(testPath, function(pathToAdd){
+      mochaInst.addFile(pathToAdd);
+    });
+
+    try {
+      mochaInst.run(function(){
+        require('ipc').send('mocha-done', 'ping');
+      });
+    } catch(e) {
+      require('ipc').send('mocha-error', e);
+    }
+  }
+
+  static redirectOutputToConsole() {
+    let remote = null;
+    try {
+      remote = require('electron').remote;
+    } catch (e) {
+      remote = require('remote');
+    }
+    let remoteConsole = remote.require('console');
+
+    // we have to do this so that mocha output doesn't look like shit
+    console.log = function () {
+      remoteConsole.log.apply(remoteConsole, arguments)
+    }
+
+    console.dir = function () {
+      remoteConsole.dir.apply(remoteConsole, arguments)
+    }
+
+    // if we don't do this, we get socket errors and our tests crash
+    Object.defineProperty(process, 'stdout', {
+      value: {
+        write: function (msg) {
+          remoteConsole.log.apply(remoteConsole, arguments)
+        }
+      }
+    });
+  }
+
+  static addFile(testPath, callback) {
+    if(fs.existsSync(testPath)) {
+      // if a single directory, find the index.js file and include that
+      if(fs.statSync(testPath).isDirectory()) {
+
+        let indexFile = path.join(testPath, "index.js");
+        console.log("checking for index file: ", indexFile);
+        if(fs.existsSync(indexFile)) {
+          callback(indexFile);
+        } else {
+          console.error("no index.js file found in directory: " + testPath);
+        }
+      }
+      // if it is a single file, only include that file
+      else {
+        callback(testPath);
+      }
+    }
   }
 }
 

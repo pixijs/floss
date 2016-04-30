@@ -11,6 +11,7 @@
     "chai": "^3.5.0",
     "commander": "^2.9.0",
     "electron-prebuilt": "^0.37.7",
+    "electron-window": "^0.6.4",
     "mocha": "^2.4.5"
   }
 }
