@@ -21,12 +21,12 @@ function createWindow () {
 
     ipc.on('mocha-done', function (event, code) {
       console.log("mocha tests done");
-      app.quit();
+      process.exit(0);
     });
 
     ipc.on('mocha-error', function (event, data) {
       console.log("mocha tests error");
-      app.quit();
+      process.exit(1);
     });
 
     // and load the index.html of the app.
@@ -57,7 +57,7 @@ app.on('window-all-closed', function () {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') {
-        app.quit();
+        process.exit(0);
     }
 });
 
