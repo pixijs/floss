@@ -1,6 +1,6 @@
 'use strict';
 
-let RenderProcess = require('./src/RenderProcess');
+let RenderProcess = require('../src/RenderProcess');
 global.window = require('electron').BrowserWindow;
 
 require('ipc').on('ping', function(messageString) {

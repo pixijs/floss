@@ -14,19 +14,24 @@ class CommandLineEntry {
       return;
     }
 
-    let testPath = parsedArgs.path;
+    this.run(parsedArgs.path, !!parsedArgs.debug, function(){});
+  }
+
+  static run(testPath, debug, onCompleteCallback) {
+    // let testPath = path;
     let spawn = require('child_process').spawn;
     let electronPath = require( 'electron-prebuilt' );
 
-    let jiboTestElectronProjectPath = path.join(__dirname, "../");
+    let jiboTestElectronProjectPath = path.join(__dirname, "../electron");
     let args = JSON.stringify({
       'testPath' : testPath,
-      'debug': !!parsedArgs.debug
+      'debug': debug
     });
 
     let electronProcess = spawn(electronPath, [jiboTestElectronProjectPath, args], { stdio: 'inherit' } );
     electronProcess.on('close', function (code) {
         console.log('process exit code ' + code);
+        onCompleteCallback(code);
     });
   }
 
