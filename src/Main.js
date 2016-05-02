@@ -31,8 +31,7 @@ export default class Main {
 
     createWindow() {
 
-        let argsString = process.argv.slice(2)[0];
-        let args = JSON.parse(argsString);
+        let args = JSON.parse(process.argv.slice(2)[0]);
 
         const BrowserWindow = require('browser-window');
         const ipc = require('ipc');

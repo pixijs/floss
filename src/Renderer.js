@@ -17,10 +17,11 @@ export default class Renderer {
         const ipc = require('ipc');
         ipc.on('ping', (data) => {
             const response = JSON.parse(data);
+            global.options = response;
             if (response.debug) {
-                this.headful(response.testPath);
+                this.headful(response.path);
             } else {
-                this.headless(response.testPath);
+                this.headless(response.path);
             }
         });
 

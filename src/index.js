@@ -1,6 +1,7 @@
 import path from 'path';
 import commander from 'commander';
 import findRoot from 'find-root';
+import assign from 'object-assign';
 import {
     spawn
 } from 'child_process';
@@ -17,36 +18,31 @@ class JiboTest {
             parsedArgs.outputHelp();
             return;
         }
-        this.run(
-            parsedArgs.path, 
-            !!parsedArgs.debug,
-            function(){}
-        );
+        this.run(parsedArgs, function(){});
     }
 
-    static run(testPath, debug, onCompleteCallback) {
+    static run(options, done) {
 
-        if (typeof debug === "function") {
-            onCompleteCallback = debug;
-            debug = false;
+        if (typeof options === "string") {
+            options = {
+                path: options 
+            };
         }
+
+        options = assign({
+            debug: false
+        }, options);
 
         const root = findRoot(__dirname);
         const app = path.join(root, 'electron');
-        const args = JSON.stringify({
-            'testPath': testPath,
-            'debug': debug
-        });
+        const args = JSON.stringify(options);
 
         const childProcess = spawn(
             electronPath, [app, args], {
                 stdio: 'inherit'
             }
         );
-        childProcess.on('close', (code) => {
-            // console.log('process exit code ' + code);
-            onCompleteCallback(code);
-        });
+        childProcess.on('close', done);
     }
 
     static parseArgs(args) {
