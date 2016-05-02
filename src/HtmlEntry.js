@@ -1,14 +1,14 @@
 'use strict';
 
-let RunMocha = require('./src/RunMocha');
+let RenderProcess = require('./src/RenderProcess');
 global.window = require('electron').BrowserWindow;
 
 require('ipc').on('ping', function(messageString) {
 
   let messageObj = JSON.parse(messageString);
   if(messageObj.debug) {
-    RunMocha.runHeadful(messageObj.testPath);
+    RenderProcess.runHeadful(messageObj.testPath);
   } else {
-    RunMocha.runHeadless(messageObj.testPath);
+    RenderProcess.runHeadless(messageObj.testPath);
   }
 });

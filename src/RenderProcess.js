@@ -7,11 +7,12 @@ require('./../node_modules/mocha/mocha.js');
 require('./../node_modules/chai/chai.js');
 
 let chai = require('chai');
+global.chai = chai;
 global.should = chai.should;
 global.assert = chai.assert;
 global.expect = chai.expect;
 
-class RunMocha {
+class RenderProcess {
   static runHeadful(testPath) {
     mocha.setup({
       ui:'bdd',
@@ -19,7 +20,9 @@ class RunMocha {
     });
 
     this.addFile(testPath, function(pathToAdd){
-      require(testPath);
+      if(pathToAdd) {
+        require(pathToAdd);
+      }
     });
 
     mocha.run();
@@ -37,15 +40,21 @@ class RunMocha {
     mochaInst.useColors(true);
 
     this.addFile(testPath, function(pathToAdd){
-      mochaInst.addFile(pathToAdd);
+      if(pathToAdd) {
+        mochaInst.addFile(pathToAdd);
+      }
     });
 
     try {
-      mochaInst.run(function(){
-        require('ipc').send('mocha-done', 'ping');
+      mochaInst.run(function(errorCount){
+        if(errorCount > 0) {
+          require('ipc').send('mocha-error', 'ping');
+        } else {
+          require('ipc').send('mocha-done', 'ping');
+        }
       });
     } catch(e) {
-      require('ipc').send('mocha-error', e);
+      require('ipc').send('mocha-error', 'ping');
     }
   }
 
@@ -88,6 +97,7 @@ class RunMocha {
           callback(indexFile);
         } else {
           console.error("no index.js file found in directory: " + testPath);
+          callback(null);
         }
       }
       // if it is a single file, only include that file
@@ -98,4 +108,4 @@ class RunMocha {
   }
 }
 
-module.exports = RunMocha;
+module.exports = RenderProcess;
