@@ -1,17 +1,31 @@
 {
   "name": "jibo-test",
   "version": "0.1.0",
+  "description": "Debuggable Mocha tests in Electron",
   "bin": {
     "jibotest": "./bin/jibotest"
   },
-  "main": "main.js",
-  "license": "UNLICENSED",
-  "private": true,
+  "main": "./lib/jibo-test.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.jibo.com:sdk/jibo-test.git"
+  },
+  "publishConfig": {
+    "registry": "http://npm.jibo.com:8080"
+  },
   "dependencies": {
     "chai": "^3.5.0",
     "commander": "^2.9.0",
-    "electron-prebuilt": "^0.37.7",
+    "electron-prebuilt": "~0.34.1",
     "electron-window": "^0.6.4",
+    "find-root": "^1.0.0",
     "mocha": "^2.4.5"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "jibo-gulp": "^2.0.0"
   }
 }

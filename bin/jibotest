@@ -1,4 +1,3 @@
 #!/usr/bin/env node
 'use strict';
-
-require('../src/CommandLineEntry').launch(process.argv);
+require('../lib/jibo-test').cli(process.argv);
