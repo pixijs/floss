@@ -7,6 +7,9 @@ Uses Electron to provide a Mocha unit-testing environment which can be run headl
 ```js
 gulp.task('test', function(done) {
     var jiboTest = require('jibo-test');
-    jiboTest.run('test/index.js', true, done);
+    jiboTest.run('test/index.js', done);
+
+    // To run in debug mode (open Electron window):
+    // jiboTest.run('test/index.js', true, done);
 });
 ```

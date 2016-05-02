@@ -25,6 +25,12 @@ class JiboTest {
     }
 
     static run(testPath, debug, onCompleteCallback) {
+
+        if (typeof debug === "function") {
+            onCompleteCallback = debug;
+            debug = false;
+        }
+
         const root = findRoot(__dirname);
         const app = path.join(root, 'electron');
         const args = JSON.stringify({
