@@ -87,11 +87,14 @@ class RenderProcess {
   }
 
   static addFile(testPath, callback) {
+    testPath = path.resolve(testPath);
+
     if(fs.existsSync(testPath)) {
       // if a single directory, find the index.js file and include that
       if(fs.statSync(testPath).isDirectory()) {
 
         let indexFile = path.join(testPath, "index.js");
+
         console.log("checking for index file: ", indexFile);
         if(fs.existsSync(indexFile)) {
           callback(indexFile);
