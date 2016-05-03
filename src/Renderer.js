@@ -2,6 +2,7 @@ import Mocha from 'mocha';
 import chai from 'chai';
 import path from 'path';
 import fs from 'fs';
+import resolve from 'resolve';
 
 require('mocha/mocha');
 require('chai/chai');
@@ -26,7 +27,7 @@ export default class Renderer {
         });
 
         // Add the stylesheet
-        const mochaPath = path.dirname(require.resolve('mocha'));
+        const mochaPath = path.dirname(resolve.sync('mocha', {basedir: __dirname}));
         const link = document.getElementById(linkId);
         link.href = path.join(mochaPath, 'mocha.css');
     }
