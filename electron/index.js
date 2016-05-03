@@ -1,4 +1,4 @@
 'use strict';
 
-const jibotest = require('../lib/jibo-test');
-new jibotest.Main(__dirname + '/index.html');
+const floss = require('../lib/floss');
+new floss.Main(__dirname + '/index.html');

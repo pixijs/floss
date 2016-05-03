@@ -1,17 +1,17 @@
 {
-  "name": "jibo-test",
+  "name": "floss",
   "version": "0.2.0",
-  "description": "Debuggable Mocha tests in Electron",
+  "description": "Unit-testing for those hard to reach places",
   "bin": {
-    "jibotest": "./bin/jibotest"
+    "floss": "./bin/floss"
   },
-  "main": "./lib/jibo-test.js",
+  "main": "./lib/floss.js",
   "scripts": {
     "test": "gulp test"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.jibo.com:sdk/jibo-test.git"
+    "url": "git@github.jibo.com:sdk/floss.git"
   },
   "publishConfig": {
     "registry": "http://npm.jibo.com:8080"

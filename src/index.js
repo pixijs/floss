@@ -10,7 +10,7 @@ import electronPath from 'electron-prebuilt';
 import Renderer from './Renderer';
 import Main from './Main';
 
-class JiboTest {
+class Floss {
     static cli(args) {
         const parsedArgs = this.parseArgs(args);
         if (!parsedArgs.path) {
@@ -61,4 +61,4 @@ class JiboTest {
     }
 }
 
-module.exports = JiboTest;
+module.exports = Floss;

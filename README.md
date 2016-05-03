@@ -1,13 +1,15 @@
-# Jibo Test
+# Floss
 
-Uses Electron to provide a Mocha unit-testing environment which can be run headlessly or to debugged in a brwoser. 
+Unit-testing for those hard to reach places.
+
+Uses Electron to provide a Mocha unit-testing environment which can be run headlessly or to debugged with DevTools. 
 
 ## Gulp Implementation
 
 ```js
-var jibotest = require('jibo-test');
+var floss = require('floss');
 gulp.task('test', function(done) {
-    jibotest.run('test/index.js', done);    
+    floss.run('test/index.js', done);    
 });
 ```
 
@@ -17,7 +19,7 @@ Open tests in an Electron window where test can can be debuged with `debugger` a
 
 ```js
 gulp.task('test', function(done) {
-    jibotest.run({
+    floss.run({
         path: 'test/index.js',
         debug: true
     }, done);
@@ -30,7 +32,7 @@ Additional properties can be passed to the test code by adding more values to th
 
 ```js
 gulp.task('test', function(done) {
-    jibotest.run({
+    floss.run({
         path: 'test/index.js',
         customUrl: 'http://localhost:8080' // <- custom
     }, done);
