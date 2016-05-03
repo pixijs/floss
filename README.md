@@ -66,3 +66,38 @@ To enable debugging use the `--debug` argument:
 ```bash
 floss --path test/index.js --debug
 ```
+
+## Travis Integration
+
+Floss can be used with [Travis CI](https://travis-ci.org/) to run Electron headlessly by utilizing Xvfb. Here's a sample of how to setup this project.
+
+### package.json
+
+Note that scripts `test` must be setup in your **package.json**;
+
+```json
+{
+    "scripts": {
+        "test": "gulp test"
+    }
+}
+```
+
+### .travis.yml
+
+```yml
+language: node_js
+node_js:
+    - "4"
+
+install:
+    - npm install xvfb-maybe
+    - npm install
+
+before_script:
+  - export DISPLAY=':99.0'
+  - Xvfb :99 -screen 0 1024x768x24 -extension RANDR &
+
+script:
+    - xvfb-maybe npm test
+```
