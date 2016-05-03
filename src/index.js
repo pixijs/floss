@@ -42,7 +42,7 @@ class Floss {
                 stdio: 'inherit'
             }
         );
-        childProcess.on('close', done);
+        childProcess.on('close', () => { done(); });
     }
 
     static parseArgs(args) {
