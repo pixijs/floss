@@ -2,9 +2,9 @@
 
 Unit-testing for those hard to reach places.
 
-Uses Electron to provide a Mocha unit-testing environment which can be run headlessly or to debugged with DevTools. 
+Uses Electron to provide a Mocha unit-testing environment which can be run headlessly or to debugged with DevTools. This was largely inspired by the [electron-mocha](https://github.com/jprichardson/electron-mocha) and [mocha-electron](https://github.com/tscanlin/mochatron) projects but didn't quite have the debugging features needed to develop tests.
 
-## Gulp Implementation
+## Gulp Usage
 
 ```js
 var floss = require('floss');
@@ -43,4 +43,26 @@ The test code and use the global `options` property to have access to the run op
 
 ```js
 console.log(options.customUrl); // logs: http://localhost:8080
+```
+
+## Command Line Usage
+
+Installed globally via `npm install -g floss`.
+
+```bash
+floss --path test/index.js
+```
+
+Or installed locally:
+
+```bash
+node node_modules/.bin/floss --path test/index.js
+```
+
+### Debug Mode
+
+To enable debugging use the `--debug` argument:
+
+```bash
+floss --path test/index.js --debug
 ```
