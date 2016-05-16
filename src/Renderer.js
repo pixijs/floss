@@ -15,8 +15,10 @@ global.expect = chai.expect;
 export default class Renderer {
     
     constructor(linkId) {
-        const ipc = require('ipc');
-        ipc.on('ping', (data) => {
+
+        const ipc = require('electron').ipcRenderer;
+
+        ipc.on('ping', (ev, data) => {
             const response = JSON.parse(data);
             global.options = response;
             if (response.debug) {
@@ -60,7 +62,7 @@ export default class Renderer {
                 mochaInst.addFile(pathToAdd);
             }
         });
-        const ipc = require('ipc');
+        const ipc = require('electron').ipcRenderer;
         try {
             mochaInst.run(function(errorCount) {
                 if (errorCount > 0) {
@@ -76,8 +78,8 @@ export default class Renderer {
 
     redirectOutputToConsole() {
 
-        const remote = require('remote');
-        const remoteConsole = remote.require('console');
+        const remote = require('electron').remote;
+        const remoteConsole = remote.getGlobal('console');
 
         // we have to do this so that mocha output doesn't look like shit
         console.log = function() {
