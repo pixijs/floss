@@ -25,7 +25,7 @@ class Floss {
 
         if (typeof options === "string") {
             options = {
-                path: options 
+                path: options
             };
         }
 

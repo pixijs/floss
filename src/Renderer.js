@@ -1,5 +1,7 @@
 import Mocha from 'mocha';
 import chai from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import path from 'path';
 import fs from 'fs';
 import resolve from 'resolve';
@@ -8,12 +10,14 @@ require('mocha/mocha');
 require('chai/chai');
 
 global.chai = chai;
+global.sinon = sinon;
 global.should = chai.should;
 global.assert = chai.assert;
 global.expect = chai.expect;
+global.chai.use(sinonChai);
 
 export default class Renderer {
-    
+
     constructor(linkId) {
 
         const ipc = require('electron').ipcRenderer;
