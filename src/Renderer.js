@@ -4,6 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import path from 'path';
 import fs from 'fs';
+import resolve from 'resolve';
 
 require('mocha/mocha');
 require('chai/chai');
@@ -18,8 +19,10 @@ global.chai.use(sinonChai);
 export default class Renderer {
 
     constructor(linkId) {
-        const ipc = require('ipc');
-        ipc.on('ping', (data) => {
+
+        const ipc = require('electron').ipcRenderer;
+
+        ipc.on('ping', (ev, data) => {
             const response = JSON.parse(data);
             global.options = response;
             if (response.debug) {
@@ -30,7 +33,7 @@ export default class Renderer {
         });
 
         // Add the stylesheet
-        const mochaPath = path.dirname(require.resolve('mocha'));
+        const mochaPath = path.dirname(resolve.sync('mocha', {basedir: __dirname}));
         const link = document.getElementById(linkId);
         link.href = path.join(mochaPath, 'mocha.css');
     }
@@ -63,7 +66,7 @@ export default class Renderer {
                 mochaInst.addFile(pathToAdd);
             }
         });
-        const ipc = require('ipc');
+        const ipc = require('electron').ipcRenderer;
         try {
             mochaInst.run(function(errorCount) {
                 if (errorCount > 0) {
@@ -79,8 +82,8 @@ export default class Renderer {
 
     redirectOutputToConsole() {
 
-        const remote = require('remote');
-        const remoteConsole = remote.require('console');
+        const remote = require('electron').remote;
+        const remoteConsole = remote.getGlobal('console');
 
         // we have to do this so that mocha output doesn't look like shit
         console.log = function() {

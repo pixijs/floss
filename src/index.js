@@ -42,7 +42,12 @@ class Floss {
                 stdio: 'inherit'
             }
         );
-        childProcess.on('close', done);
+        childProcess.on('close', (code) => { 
+            if (code !== 0) {
+                return done(new Error('Mocha tests failed'));
+            }
+            done();
+        });
     }
 
     static parseArgs(args) {

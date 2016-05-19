@@ -1,6 +1,6 @@
 {
   "name": "floss",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Unit-testing for those hard to reach places",
   "bin": {
     "floss": "./bin/floss"
@@ -13,18 +13,22 @@
     "type": "git",
     "url": "git@github.jibo.com:sdk/floss.git"
   },
+  "engines": {
+    "node": ">=4.0"
+  },
   "publishConfig": {
     "registry": "http://npm.jibo.com:8080"
   },
   "dependencies": {
     "chai": "^3.5.0",
     "commander": "^2.9.0",
-    "electron-prebuilt": "~0.34.1",
+    "electron-prebuilt": "^1.1.0",
     "find-root": "^1.0.0",
     "mocha": "^2.4.5",
     "object-assign": "^4.1.0",
+    "resolve": "^1.1.7",
     "sinon": "^1.17.4",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0"    
   },
   "devDependencies": {
     "gulp": "^3.9.1",

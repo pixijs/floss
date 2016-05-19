@@ -9,7 +9,7 @@ export default class Main {
         // be closed automatically when the JavaScript object is garbage collected.
         this.mainWindow = null;
 
-        const app = require('app');
+        const app = require('electron').app; 
 
         // This method will be called when Electron has finished
         // initialization and is ready to create browser windows.
@@ -32,10 +32,10 @@ export default class Main {
     createWindow() {
 
         let args = JSON.parse(process.argv.slice(2)[0]);
-
-        const BrowserWindow = require('browser-window');
-        const ipc = require('ipc');
-
+        
+        const BrowserWindow = require('electron').BrowserWindow;
+        const ipc = require('electron').ipcMain;
+        
         // Create the browser window.
         this.mainWindow = new BrowserWindow({
             width: 800,
@@ -52,7 +52,7 @@ export default class Main {
         });
 
         // and load the index.html of the app.
-        this.mainWindow.loadUrl('file://' + this.htmlPath);
+        this.mainWindow.loadURL('file://' + this.htmlPath);
 
         // Open the DevTools.
         // mainWindow.webContents.openDevTools();
