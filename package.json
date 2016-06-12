@@ -1,6 +1,6 @@
 {
   "name": "floss",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Unit-testing for those hard to reach places",
   "bin": {
     "floss": "./bin/floss"
