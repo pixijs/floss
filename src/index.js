@@ -5,7 +5,7 @@ import assign from 'object-assign';
 import {
     spawn
 } from 'child_process';
-import electronPath from 'electron-prebuilt';
+import electron from 'electron-prebuilt';
 
 import Renderer from './Renderer';
 import Main from './Main';
@@ -30,7 +30,8 @@ class Floss {
         }
 
         options = assign({
-            debug: false
+            debug: false,
+            electron: process.env.ELECTRON_PATH || electron
         }, options);
 
         const root = findRoot(__dirname);
@@ -38,7 +39,7 @@ class Floss {
         const args = JSON.stringify(options);
 
         const childProcess = spawn(
-            electronPath, [app, args], {
+            options.electron, [app, args], {
                 stdio: 'inherit'
             }
         );
@@ -53,6 +54,7 @@ class Floss {
     static parseArgs(args) {
         commander.option('-d, --debug', 'Launch electron in debug mode')
             .option('-p, --path [path/to/folder/or/file.js]', 'Either a path to a directory containing index.js or a path to a single test file')
+            .option('-e, --electron [path/to/Electron]', 'Path to version of Electron to test on')
             .parse(args);
         return commander;
     }

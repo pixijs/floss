@@ -67,6 +67,27 @@ To enable debugging use the `--debug` argument:
 floss --path test/index.js --debug
 ```
 
+## Custom Electron Version
+
+Some application may require a specific version of Electron. Floss uses Electron 1.1.0+, but you can specific the path to your own version. The custom version can be used either through the commandline argument `--electron`, by setting the Node environmental variable `ELECTRON_PATH` or by setting the run option `electron`.
+
+```js
+gulp.task('test', function(done) {
+    floss.run({
+        path: 'test/index.js',
+        electron: require('electron-prebuilt')
+    }, done);
+});
+```
+```bash
+floss --path test/index.js \
+	--electron /usr/local/bin/electron
+```
+
+```bash
+ELECTRON_PATH=/usr/local/bin/electron floss --path test/index.js
+```
+
 ## Travis Integration
 
 Floss can be used with [Travis CI](https://travis-ci.org/) to run Electron headlessly by utilizing Xvfb. Here's a sample of how to setup this project.
