@@ -2,19 +2,25 @@ import path from 'path';
 import commander from 'commander';
 import findRoot from 'find-root';
 import assign from 'object-assign';
-import {
-    spawn
-} from 'child_process';
-import electron from 'electron-prebuilt';
-
+import {spawn} from 'child_process';
 import Renderer from './Renderer';
 import Main from './Main';
+
+let electron; 
+try {
+    electron = require('electron-prebuilt');
+}
+catch(err) {
+    // silence is golden
+}
+
+require('colors');
 
 class Floss {
     static cli(args) {
         const parsedArgs = this.parseArgs(args);
         if (!parsedArgs.path) {
-            console.error("Error, no path specified");
+            console.error("Error, no path specified.".red);
             parsedArgs.outputHelp();
             return;
         }
@@ -33,6 +39,16 @@ class Floss {
             debug: false,
             electron: process.env.ELECTRON_PATH || electron
         }, options);
+
+        if (!options.path) {
+            console.error("Error: No path specified for Floss.".red);
+            return done();
+        }
+
+        if (!options.electron) {
+            console.error("Error: Unable to find Electron. Install 'electron-prebuilt' alongside Floss.".red);
+            return done();
+        }
 
         const root = findRoot(__dirname);
         const app = path.join(root, 'electron');

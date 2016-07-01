@@ -55,7 +55,7 @@ export default class Main {
         this.mainWindow.loadURL('file://' + this.htmlPath);
 
         // Open the DevTools.
-        // mainWindow.webContents.openDevTools();
+        this.mainWindow.webContents.openDevTools('bottom');
 
         this.mainWindow.webContents.on('did-finish-load', () => {
             this.mainWindow.webContents.send('ping', JSON.stringify(args));

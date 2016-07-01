@@ -15,7 +15,7 @@ gulp.task('test', function(done) {
 
 ### Debug Mode
 
-Open tests in an Electron window where test can can be debuged with `debugger` and dev tools.
+Open tests in an Electron window where test can can be debugged with `debugger` and dev tools.
 
 ```js
 gulp.task('test', function(done) {
@@ -47,7 +47,7 @@ console.log(options.customUrl); // logs: http://localhost:8080
 
 ## Command Line Usage
 
-Installed globally via `npm install -g floss`.
+Installed globally via `npm install -g floss electron-prebuilt`.
 
 ```bash
 floss --path test/index.js
@@ -61,7 +61,7 @@ node node_modules/.bin/floss --path test/index.js
 
 ### Debug Mode
 
-To enable debugging use the `--debug` argument:
+Open tests in an Electron window where test can can be debugged with `debugger` and dev tools.
 
 ```bash
 floss --path test/index.js --debug
@@ -69,7 +69,7 @@ floss --path test/index.js --debug
 
 ## Custom Electron Version
 
-Some application may require a specific version of Electron. Floss uses Electron 1.1.0+, but you can specific the path to your own version. The custom version can be used either through the commandline argument `--electron`, by setting the Node environmental variable `ELECTRON_PATH` or by setting the run option `electron`.
+Some application may require a specific version of Electron. Floss uses Electron 1.0.0+, but you can specific the path to your own version. The custom version can be used either through the commandline argument `--electron`, by setting the Node environmental variable `ELECTRON_PATH` or by setting the run option `electron`.
 
 ```js
 gulp.task('test', function(done) {
