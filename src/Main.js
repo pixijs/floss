@@ -1,3 +1,6 @@
+import path from 'path';
+import fs from 'fs';
+
 export default class Main {
 
     constructor(htmlPath) {
@@ -10,6 +13,9 @@ export default class Main {
         this.mainWindow = null;
 
         const app = require('electron').app; 
+
+        // Get the configuration path 
+        this.configPath = path.join(app.getPath('userData'), 'config.json');
 
         // This method will be called when Electron has finished
         // initialization and is ready to create browser windows.
@@ -36,12 +42,13 @@ export default class Main {
         const BrowserWindow = require('electron').BrowserWindow;
         const ipc = require('electron').ipcMain;
         
+        // Get the window bounds
+        const options = this.restoreBounds();
+
+        options.show = args.debug;
+
         // Create the browser window.
-        this.mainWindow = new BrowserWindow({
-            width: 800,
-            height: 600,
-            show: args.debug
-        });
+        this.mainWindow = new BrowserWindow(options);
 
         ipc.on('mocha-done', () => {
             process.exit(0);
@@ -61,6 +68,11 @@ export default class Main {
             this.mainWindow.webContents.send('ping', JSON.stringify(args));
         });
 
+        // Update bounds
+        this.mainWindow.on('close', () => {
+            this.saveBounds();
+        });
+
         // Emitted when the window is closed.
         this.mainWindow.on('closed', () => {
             // Dereference the window object, usually you would store windows
@@ -68,5 +80,37 @@ export default class Main {
             // when you should delete the corresponding element.
             this.mainWindow = null;
         });
+    }
+
+    /**
+     * Restore the bounds of the window.
+     */
+    restoreBounds(){
+        let data;
+        try {
+            data = JSON.parse(fs.readFileSync(this.configPath, 'utf8'));
+        }
+        catch(e) {
+            // do nothing
+        }
+
+        if (data && data.bounds) {
+            return data.bounds;
+        }
+        else {
+            return {
+                width: 1024,
+                height: 768
+            };
+        }
+    }
+
+    /**
+     * Save the bounds of the window.
+     */
+    saveBounds(){
+        fs.writeFileSync(this.configPath, JSON.stringify({
+            bounds: this.mainWindow.getBounds()
+        }));
     }
 }
