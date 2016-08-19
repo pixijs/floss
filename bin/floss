@@ -1,3 +1,5 @@
 #!/usr/bin/env node
 'use strict';
-require('../lib/floss').cli(process.argv);
+require('../lib/floss').cli(process.argv, function(returnCode){
+    process.exit(returnCode);
+});

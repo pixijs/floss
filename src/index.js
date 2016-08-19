@@ -6,7 +6,7 @@ import {spawn} from 'child_process';
 import Renderer from './Renderer';
 import Main from './Main';
 
-let electron; 
+let electron;
 try {
     electron = require('electron-prebuilt');
 }
@@ -17,14 +17,22 @@ catch(err) {
 require('colors');
 
 class Floss {
-    static cli(args) {
+    static cli(args, callback) {
         const parsedArgs = this.parseArgs(args);
         if (!parsedArgs.path) {
             console.error("Error, no path specified.".red);
             parsedArgs.outputHelp();
             return;
         }
-        this.run(parsedArgs, function(){});
+        this.run(parsedArgs, function(err){
+            if(callback) {
+                if(err) {
+                    callback(1);
+                } else {
+                    callback(0);
+                }
+            }
+        });
     }
 
     static run(options, done) {
@@ -59,7 +67,7 @@ class Floss {
                 stdio: 'inherit'
             }
         );
-        childProcess.on('close', (code) => { 
+        childProcess.on('close', (code) => {
             if (code !== 0) {
                 return done(new Error('Mocha tests failed'));
             }
