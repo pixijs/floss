@@ -53,29 +53,38 @@ export default class Renderer {
     }
 
     headless(testPath) {
-        this.redirectOutputToConsole();
-        mocha.setup({
-            ui: 'tdd'
-        });
-        let mochaInst = new Mocha();
-        mochaInst.ui('tdd');
-        mochaInst.useColors(true);
-
-        this.addFile(testPath, (pathToAdd) => {
-            if (pathToAdd) {
-                mochaInst.addFile(pathToAdd);
-            }
-        });
-        const ipc = require('electron').ipcRenderer;
         try {
+            this.redirectOutputToConsole();
+            mocha.setup({
+                ui: 'tdd'
+            });
+
+            let mochaInst = new Mocha();
+            mochaInst.ui('tdd');
+            mochaInst.useColors(true);
+
+            this.addFile(testPath, (pathToAdd) => {
+                if (pathToAdd) {
+                    mochaInst.addFile(pathToAdd);
+                }
+            });
             mochaInst.run(function(errorCount) {
-                if (errorCount > 0) {
+                try {
+                    const ipc = require('electron').ipcRenderer;
+                    if (errorCount > 0) {
+                        ipc.send('mocha-error', 'ping');
+                    } else {
+                        ipc.send('mocha-done', 'ping');
+                    }
+                } catch(err) {
+                    console.log("FLOSS - caught inner exception:", err);
+                    const ipc = require('electron').ipcRenderer;
                     ipc.send('mocha-error', 'ping');
-                } else {
-                    ipc.send('mocha-done', 'ping');
                 }
             });
         } catch (e) {
+            console.log("FLOSS - caught outer exception:", e);
+            const ipc = require('electron').ipcRenderer;
             ipc.send('mocha-error', 'ping');
         }
     }
