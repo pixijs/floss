@@ -23,9 +23,9 @@ npm install floss electron-prebuild --save-dev
 ## Gulp Usage
 
 ```js
-var floss = require('floss');
+const floss = require('floss');
 gulp.task('test', function(done) {
-    floss.run('test/index.js', done);    
+    floss('test/index.js', done); 
 });
 ```
 
@@ -34,8 +34,9 @@ gulp.task('test', function(done) {
 Open tests in an Electron window where test can can be debugged with `debugger` and dev tools.
 
 ```js
+const floss = require('floss');
 gulp.task('test', function(done) {
-    floss.run({
+    floss({
         path: 'test/index.js',
         debug: true
     }, done);
@@ -47,8 +48,9 @@ gulp.task('test', function(done) {
 Additional properties can be passed to the test code by adding more values to the run options.
 
 ```js
+const floss = require('floss');
 gulp.task('test', function(done) {
-    floss.run({
+    floss({
         path: 'test/index.js',
         customUrl: 'http://localhost:8080' // <- custom
     }, done);
