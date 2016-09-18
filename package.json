@@ -35,7 +35,7 @@
     "unit-tests",
     "unit-testing"
     "travis",
-    "travis-ci",
+    "travis-ci"
   ],
   "dependencies": {
     "chai": "^3.5.0",
