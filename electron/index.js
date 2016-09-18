@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const app = require('electron').app; 
+const {app, BrowserWindow, ipcMain} = require('electron');
 
 // Path to the html render
 const htmlPath = path.join(__dirname, 'index.html');
@@ -35,9 +35,6 @@ function createWindow() {
 
     let args = JSON.parse(process.argv.slice(2)[0]);
     
-    const BrowserWindow = require('electron').BrowserWindow;
-    const ipc = require('electron').ipcMain;
-    
     // Get the window bounds
     const options = restoreBounds();
 
@@ -46,11 +43,11 @@ function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow(options);
 
-    ipc.on('mocha-done', function() {
+    ipcMain.on('mocha-done', function() {
         process.exit(0);
     });
 
-    ipc.on('mocha-error', function() {
+    ipcMain.on('mocha-error', function() {
         process.exit(1);
     });
 

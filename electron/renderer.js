@@ -7,6 +7,7 @@ const sinonChai = require('sinon-chai');
 const path = require('path');
 const fs = require('fs');
 const resolve = require('resolve');
+const {ipcRenderer, remote} = require('electron');
 
 require('mocha/mocha');
 require('chai/chai');
@@ -22,9 +23,7 @@ class Renderer {
 
     constructor(linkId) {
 
-        const ipc = require('electron').ipcRenderer;
-
-        ipc.on('ping', (ev, data) => {
+        ipcRenderer.on('ping', (ev, data) => {
             const response = JSON.parse(data);
             global.options = response;
             if (response.debug) {
@@ -72,28 +71,24 @@ class Renderer {
             });
             mochaInst.run(function(errorCount) {
                 try {
-                    const ipc = require('electron').ipcRenderer;
                     if (errorCount > 0) {
-                        ipc.send('mocha-error', 'ping');
+                        ipcRenderer.send('mocha-error', 'ping');
                     } else {
-                        ipc.send('mocha-done', 'ping');
+                        ipcRenderer.send('mocha-done', 'ping');
                     }
                 } catch(err) {
                     console.log("FLOSS - caught inner exception:", err);
-                    const ipc = require('electron').ipcRenderer;
-                    ipc.send('mocha-error', 'ping');
+                    ipcRenderer.send('mocha-error', 'ping');
                 }
             });
         } catch (e) {
             console.log("FLOSS - caught outer exception:", e);
-            const ipc = require('electron').ipcRenderer;
-            ipc.send('mocha-error', 'ping');
+            ipcRenderer.send('mocha-error', 'ping');
         }
     }
 
     redirectOutputToConsole() {
 
-        const remote = require('electron').remote;
         const remoteConsole = remote.getGlobal('console');
 
         // we have to do this so that mocha output doesn't look like shit
