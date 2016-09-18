@@ -2,7 +2,7 @@
 
 const path = require('path');
 const assign = require('object-assign');
-const spawn = require('child_process').spawn;
+const {spawn} = require('child_process');
 
 let electron;
 try {
