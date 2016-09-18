@@ -5,6 +5,9 @@
   "bin": "./bin/floss.js",
   "main": "./index.js",
   "author": "Matt Karl <matt.karl@jibo.com>",
+  "contributors": [
+    "Matt Bittarelli <matt.bittarelli@jibo.com>"
+  ],
   "scripts": {
     "lint": "eslint index.js electron bin test",
     "pretest": "npm run lint",
