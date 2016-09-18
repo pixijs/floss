@@ -2,6 +2,8 @@
 
 Unit-testing for those hard to reach places.
 
+[![Build Status](https://travis-ci.org/jiborobot/floss.svg?branch=master)](https://travis-ci.org/jiborobot/floss) [![npm version](https://badge.fury.io/js/floss.svg)](https://badge.fury.io/js/floss)
+
 Uses Electron to provide a Mocha unit-testing environment which can be run headlessly or to debugged with DevTools. This was largely inspired by the [electron-mocha](https://github.com/jprichardson/electron-mocha) and [mocha-electron](https://github.com/tscanlin/mochatron) projects but didn't quite have the debugging features needed to develop tests.
 
 ## Gulp Usage
