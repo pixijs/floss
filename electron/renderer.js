@@ -1,10 +1,12 @@
-import Mocha from 'mocha';
-import chai from 'chai';
-import sinon from 'sinon';
-import sinonChai from 'sinon-chai';
-import path from 'path';
-import fs from 'fs';
-import resolve from 'resolve';
+'use strict';
+
+const Mocha = require('mocha');
+const chai = require('chai');
+const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
+const path = require('path');
+const fs = require('fs');
+const resolve = require('resolve');
 
 require('mocha/mocha');
 require('chai/chai');
@@ -16,7 +18,7 @@ global.assert = chai.assert;
 global.expect = chai.expect;
 global.chai.use(sinonChai);
 
-export default class Renderer {
+class Renderer {
 
     constructor(linkId) {
 
@@ -137,3 +139,5 @@ export default class Renderer {
         }
     }
 }
+
+module.exports = Renderer;

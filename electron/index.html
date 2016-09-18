@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Mocha Tests</title>
+        <title>Floss Tests</title>
         <link id="mocha-css" rel="stylesheet" />
     </head>
     <body>
@@ -10,8 +10,8 @@
         <div id="messages"></div>
         <div id="fixtures"></div>
         <script>
-            const floss = require('../lib/floss');
-            new floss.Renderer('mocha-css');            
+            const Renderer = require('./renderer');
+            new Renderer('mocha-css');
         </script>
     </body>
 </html>
