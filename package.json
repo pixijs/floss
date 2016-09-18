@@ -9,7 +9,12 @@
     "lint": "eslint index.js electron bin test",
     "pretest": "npm run lint",
     "test": "node bin/floss.js --path=test/index.js",
-    "start": "npm test -- --debug"
+    "start": "npm test -- --debug",
+    "preversion": "npm test",
+    "postpublish": "git push && git push --tags",
+    "publish:patch": "npm version patch && npm publish",
+    "publish:minor": "npm version minor && npm publish",
+    "publish:major": "npm version major && npm publish"
   },
   "repository": {
     "type": "git",
