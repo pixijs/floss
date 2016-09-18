@@ -13,7 +13,7 @@ function cli(args, callback) {
         parsedArgs.outputHelp();
         return;
     }
-    floss.run(parsedArgs, function(err){
+    floss(parsedArgs, function(err){
         if(callback) {
             if(err) {
                 callback(1);
