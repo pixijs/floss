@@ -101,7 +101,7 @@ Some application may require a specific version of Electron. Floss uses Electron
 
 ```js
 gulp.task('test', function(done) {
-    floss.run({
+    floss({
         path: 'test/index.js',
         electron: require('electron-prebuilt')
     }, done);
