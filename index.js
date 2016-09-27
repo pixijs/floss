@@ -49,6 +49,13 @@ function floss(options, done) {
     const app = path.join(__dirname, 'electron');
     const args = JSON.stringify(options);
 
+    let isWindows = /^win/.test(process.platform);
+    if(isWindows) {
+        if(!path.extname(options.electron)) {
+            options.electron = options.electron + ".cmd";
+        }
+    }
+
     const childProcess = spawn(
         options.electron, [app, args], {
             stdio: 'inherit'
