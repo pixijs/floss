@@ -55,7 +55,7 @@ function floss(options, done) {
         // options.electron will just be "electron" at this point.
         // Due to limitations with how nodejs spawns windows processes we need to add .cmd to the end of the command
         // https://github.com/nodejs/node/issues/3675
-        options.electron = options.electron + ".cmd";
+        options.electron += ".cmd";
     }
 
     const childProcess = spawn(
