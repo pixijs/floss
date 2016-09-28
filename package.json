@@ -19,6 +19,9 @@
     "publish:minor": "npm version minor && npm publish",
     "publish:major": "npm version major && npm publish"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.com"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:jiborobot/floss.git"
