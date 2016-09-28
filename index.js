@@ -49,6 +49,15 @@ function floss(options, done) {
     const app = path.join(__dirname, 'electron');
     const args = JSON.stringify(options);
 
+    const isWindows = /^win/.test(process.platform);
+    if(isWindows && !path.extname(options.electron)) {
+        // In the case where floss is running in windows with the cmdline option --electron electron
+        // options.electron will just be "electron" at this point.
+        // Due to limitations with how nodejs spawns windows processes we need to add .cmd to the end of the command
+        // https://github.com/nodejs/node/issues/3675
+        options.electron += ".cmd";
+    }
+
     const childProcess = spawn(
         options.electron, [app, args], {
             stdio: 'inherit'
