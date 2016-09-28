@@ -21,6 +21,9 @@ catch(err) {
  * @param {String} [options.electron] Path to custom electron version. If undefined
  *        will use environment variable `ELECTRON_PATH` or electron-prebuilt
  *        installed alongside.
+ * @param {String} [options.reporter=spec] Mocha reporter (non-debug mode only)
+ * @param {String} [options.reporterOptions] Additional options for the reporter
+ *        useful for specifying an output file if using the 'xunit' reporter.
  * @param {Function} done Called when completed. Passes error if failed.
  */
 function floss(options, done) {

@@ -34,27 +34,35 @@ gulp.task('test', function(done) {
 Open tests in an Electron window where test can can be debugged with `debugger` and dev tools.
 
 ```js
-const floss = require('floss');
-gulp.task('test', function(done) {
-    floss({
-        path: 'test/index.js',
-        debug: true
-    }, done);
-});
+floss({
+    path: 'test/index.js',
+    debug: true
+}, done);
 ```
 
-### Additional Options
+### Mocha Reporter
+
+The `reporter` and `reporterOptions` are pass-through options for Mocha to specify a different reporter when running Floss in non-debug mode.
+
+```js
+floss({
+    path: 'test/index.js',
+    reporter: 'xunit',
+    reporterOptions: {
+    	filename: 'report.xml'
+    }
+}, done);
+```
+
+### Custom Options
 
 Additional properties can be passed to the test code by adding more values to the run options.
 
 ```js
-const floss = require('floss');
-gulp.task('test', function(done) {
-    floss({
-        path: 'test/index.js',
-        customUrl: 'http://localhost:8080' // <- custom
-    }, done);
-});
+floss({
+    path: 'test/index.js',
+    customUrl: 'http://localhost:8080' // <- custom
+}, done);
 ```
 
 The test code and use the global `options` property to have access to the run options.
@@ -93,6 +101,16 @@ Open tests in an Electron window where test can can be debugged with `debugger` 
 
 ```bash
 floss --path test/index.js --debug
+```
+
+### Reporter
+
+Can use the same reporter options as the API mentioned above.
+
+```bash
+floss --path test/index.js \
+    --reporter=xunit \
+    --reporter-options output=report.xml
 ```
 
 ## Custom Electron Version
