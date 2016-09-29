@@ -25,7 +25,7 @@ npm install floss electron-prebuild --save-dev
 ```js
 const floss = require('floss');
 gulp.task('test', function(done) {
-    floss('test/index.js', done); 
+    floss('test/index.js', done);
 });
 ```
 
@@ -93,6 +93,19 @@ Open tests in an Electron window where test can can be debugged with `debugger` 
 
 ```bash
 floss --path test/index.js --debug
+```
+
+### Istanbul Code Coverage
+
+Floss comes with istanbul integration. This will generate a json report.
+
+```bash
+floss --path test/index.js --coveragePattern lib/**/*.js
+```
+
+To remap the reports using sourcemaps run
+```bash
+floss --path test/index.js --coveragePattern lib/**/*.js --sourceMaps
 ```
 
 ## Custom Electron Version
