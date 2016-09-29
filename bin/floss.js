@@ -28,6 +28,8 @@ function parseArgs(args) {
     commander.option('-d, --debug', 'Launch electron in debug mode')
         .option('-p, --path [path/to/folder/or/file.js]', 'Either a path to a directory containing index.js or a path to a single test file')
         .option('-e, --electron [path/to/Electron]', 'Path to version of Electron to test on')
+        .option('-r, --reporter [spec]', 'Mocha reporter for headless mode only')
+        .option('-o, --reporter-options [filename=report.xml]', 'Additional arguments for reporter options, query-string formatted')
         .parse(args);
     return commander;
 }
