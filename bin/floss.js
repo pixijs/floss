@@ -29,7 +29,7 @@ function parseArgs(args) {
         .option('-p, --path [path/to/folder/or/file.js]', 'Either a path to a directory containing index.js or a path to a single test file')
         .option('-e, --electron [path/to/Electron]', 'Path to version of Electron to test on')
         .option('-r, --reporter [spec]', 'Mocha reporter for headless mode only')
-        .option('-r, --reporter-options [spec]', 'Additional arguments for reporter options, query-string formatted, e.g., "filename=report.xml"')
+        .option('-r, --reporter-options [filename=report.xml]', 'Additional arguments for reporter options, query-string formatted')
         .parse(args);
     return commander;
 }
