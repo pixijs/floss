@@ -58,7 +58,7 @@ class Renderer {
         try {
             this.redirectOutputToConsole();
             mocha.setup({
-                ui: 'tdd',
+                ui: 'tdd'
             });
 
             // Format the reporter options

@@ -105,7 +105,7 @@ floss --path test/index.js --debug
 
 ### Reporter
 
-Can use the same reporter options as the API mentioned above.
+Can use the same reporter options as the API mentioned above. The `reporter-options` are expressed as a querystring, for instance `varname=foo&another=bar`.
 
 ```bash
 floss --path test/index.js \
