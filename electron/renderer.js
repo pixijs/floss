@@ -61,7 +61,7 @@ class Renderer {
             }
         });
         mocha.run(() => {
-            if(this.coverage) {
+            if (this.coverage) {
                 this.coverage.report(() => {});
             }
         });
@@ -100,7 +100,7 @@ class Renderer {
                     if (errorCount > 0) {
                         ipcRenderer.send('mocha-error', 'ping');
                     }
-                    else if(this.coverage) {
+                    else if (this.coverage) {
                         this.coverage.report(() => {
                             ipcRenderer.send('mocha-done', 'ping');
                         });
