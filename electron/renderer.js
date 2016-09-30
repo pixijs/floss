@@ -28,7 +28,7 @@ class Renderer {
         ipcRenderer.on('ping', (ev, data) => {
             const response = JSON.parse(data);
             this.options = global.options = response;
-            if(response.coveragePattern) {
+            if (response.coveragePattern) {
                 const root = require('find-root')(path.join(process.cwd(), response.path));
                 this.coverage = new Coverage(
                     root,
