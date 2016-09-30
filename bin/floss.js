@@ -39,8 +39,9 @@ function parseArgs(args) {
     commander.option('-d, --debug', 'Launch electron in debug mode')
         .option('-p, --path [path/to/folder/or/file.js]', 'Either a path to a directory containing index.js or a path to a single test file')
         .option('-e, --electron [path/to/Electron]', 'Path to version of Electron to test on')
-        .option('-s, --sourceMaps', 'Run the coverage report through sourcemap conversion')
         .option('-c, --coveragePattern <sources>', 'Glob paths for coverage support', parseList)
+        .option('-s, --coverageSourceMaps', 'Run the coverage report through sourcemap conversion')
+        .option('-h, --coverageHtmlReporter', 'Also generate an html report')
         .parse(args);
     return commander;
 }

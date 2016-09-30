@@ -30,7 +30,11 @@ class Renderer {
             global.options = response;
             if(response.coveragePattern) {
                 const root = require('find-root')(path.join(process.cwd(), response.path));
-                this.coverage = new Coverage(root, response.coveragePattern, response.sourceMaps);
+                this.coverage = new Coverage(
+                    root,
+                    response.coveragePattern,
+                    response.coverageSourceMaps,
+                    response.coverageHtmlReporter);
             }
             if (response.debug) {
                 this.headful(response.path);

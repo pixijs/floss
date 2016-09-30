@@ -100,12 +100,22 @@ floss --path test/index.js --debug
 Floss comes with istanbul integration. This will generate a json report.
 
 ```bash
-floss --path test/index.js --coveragePattern lib/**/*.js
+floss --path test/index.js --coveragePattern lib/**/*/*.js
 ```
 
-To remap the reports using sourcemaps run
+To remap the json report using sourcemaps
 ```bash
 floss --path test/index.js --coveragePattern lib/**/*.js --sourceMaps
+```
+
+To generate an additional html report
+```bash
+floss --path test/index.js --coveragePattern lib/**/*.js --htmlReporter
+```
+
+To generate an additional html report with source maps
+```bash
+floss --path test/index.js --coveragePattern lib/**/*.js --htmlReporter
 ```
 
 ## Custom Electron Version

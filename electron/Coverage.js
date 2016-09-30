@@ -6,10 +6,11 @@ const {Reporter, Instrumenter, Collector, hook} = require('istanbul');
 //thanks to https://github.com/tropy/tropy/blob/master/test/support/coverage.js
 class Coverage {
 
-    constructor(root, pattern, sourceMaps) {
+    constructor(root, pattern, sourceMaps, htmlReporter) {
         this.root = root;
         this.sourceMaps = !!sourceMaps;
         this.pattern = pattern;
+        this.htmlReporter = !!htmlReporter;
         this.instrumenter = new Instrumenter();
         this.transformer = this.instrumenter.instrumentSync.bind(this.instrumenter);
         this.cov = global.__coverage__ = {};
@@ -61,16 +62,27 @@ class Coverage {
         const collector = new Collector()
         collector.add(this.cov)
 
-        const reporter = new Reporter()
+        const reporter = new Reporter();
+
+        //defaults to basic summary and json reports
         reporter.addAll(['text-summary', 'json']);
+
+        //if we're generating html and not going throiugh source maps
+        if(this.htmlReporter && !this.sourceMaps) {
+            reporter.add('html');
+        }
+
         reporter.write(collector, true, () => {
             if(this.sourceMaps) {
+                //use remap-istanbul to generate the sourcemapped version of the reports
                 var remapIstanbul = require('remap-istanbul');
                 const coverageJson = path.join(this.root, 'coverage/coverage-final.json');
-                remapIstanbul(coverageJson, {
-                    'html': path.join(this.root, 'coverage'),
-                    'json': path.join(this.root, 'coverage', 'coverage-final.json')
-                }).then(() => {
+                const remapReporters = {'json': path.join(this.root, 'coverage', 'coverage-final.json')};
+                //add the html reporter if necessary
+                if(this.htmlReporter) {
+                    remapReporters['html'] = path.join(this.root, 'coverage');
+                }
+                remapIstanbul(coverageJson, remapReporters).then(() => {
                     done();
                 });
             }
