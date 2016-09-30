@@ -8,12 +8,8 @@ const path = require('path');
 const fs = require('fs');
 const resolve = require('resolve');
 const {ipcRenderer, remote} = require('electron');
-<<<<<<< HEAD
 const Coverage = require('./Coverage');
-
-=======
 const querystring = require('querystring');
->>>>>>> df2f055dcf2753e4d53351aeb4a4eaf5965991e1
 
 require('mocha/mocha');
 require('chai/chai');
