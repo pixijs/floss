@@ -113,17 +113,22 @@ floss --path test/index.js --coveragePattern lib/**/*/*.js
 
 To remap the json report using sourcemaps
 ```bash
-floss --path test/index.js --coveragePattern lib/**/*.js --sourceMaps
+floss --path test/index.js --coveragePattern lib/**/*/*.js --coverageSourceMaps
 ```
 
 To generate an additional html report
 ```bash
-floss --path test/index.js --coveragePattern lib/**/*.js --htmlReporter
+floss --path test/index.js --coveragePattern lib/**/*/*.js --coverageHtmlReporter
 ```
 
 To generate an additional html report with source maps
 ```bash
-floss --path test/index.js --coveragePattern lib/**/*.js --htmlReporter
+floss --path test/index.js --coveragePattern lib/**/*/*.js --coverageSourceMaps --coverageHtmlReporter
+```
+
+For lists of globs put the coverage files in quotes comma or space separated
+```bash
+floss --path test/index.js --coveragePattern "lib/**/*/*.js, node_modules/thing/lib/thing.js"
 ```
 
 ### Mocha Reporter
