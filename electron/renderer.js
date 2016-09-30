@@ -29,7 +29,11 @@ class Renderer {
             const response = JSON.parse(data);
             this.options = global.options = response;
             if (response.coveragePattern) {
-                const root = require('find-root')(path.join(process.cwd(), response.path));
+                const findRoot = require('find-root');
+                const root = findRoot(path.join(
+                    process.cwd(),
+                    response.path
+                ));
                 this.coverage = new Coverage(
                     root,
                     response.coveragePattern,
