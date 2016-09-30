@@ -52,8 +52,12 @@
     "chai": "^3.5.0",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
+    "find-root": "^1.0.0",
+    "glob": "^7.1.0",
+    "istanbul": "^0.4.5",
     "mocha": "^2.4.5",
     "object-assign": "^4.1.0",
+    "remap-istanbul": "^0.6.4",
     "resolve": "^1.1.7",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0"

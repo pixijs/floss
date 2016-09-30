@@ -8,6 +8,7 @@ require('colors');
 
 function cli(args, callback) {
     const parsedArgs = parseArgs(args);
+    // console.log(parsedArgs.coveragePattern);
     if (!parsedArgs.path) {
         console.error("Error, no path specified.".red);
         parsedArgs.outputHelp();
@@ -24,12 +25,25 @@ function cli(args, callback) {
     });
 }
 
+/**
+ * Split the value by comma or spaces
+ */
+function parseList(value) {
+    if(typeof value === 'string') {
+        return [value];
+    }
+    return value.split(/[\s,]\s*/);
+}
+
 function parseArgs(args) {
     commander.option('-d, --debug', 'Launch electron in debug mode')
         .option('-p, --path [path/to/folder/or/file.js]', 'Either a path to a directory containing index.js or a path to a single test file')
         .option('-e, --electron [path/to/Electron]', 'Path to version of Electron to test on')
+        .option('-c, --coveragePattern <sources>', 'Glob paths for coverage support', parseList)
+        .option('-s, --coverageSourceMaps', 'Run the coverage report through sourcemap conversion')
+        .option('-h, --coverageHtmlReporter', 'Also generate an html report')
         .option('-r, --reporter [spec]', 'Mocha reporter for headless mode only')
-        .option('-o, --reporter-options [filename=report.xml]', 'Additional arguments for reporter options, query-string formatted')
+        .option('-o, --reporterOptions [filename=report.xml]', 'Additional arguments for reporter options, query-string formatted')
         .parse(args);
     return commander;
 }

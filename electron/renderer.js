@@ -8,6 +8,7 @@ const path = require('path');
 const fs = require('fs');
 const resolve = require('resolve');
 const {ipcRenderer, remote} = require('electron');
+const Coverage = require('./coverage');
 const querystring = require('querystring');
 
 require('mocha/mocha');
@@ -27,6 +28,18 @@ class Renderer {
         ipcRenderer.on('ping', (ev, data) => {
             const response = JSON.parse(data);
             this.options = global.options = response;
+            if (response.coveragePattern) {
+                const findRoot = require('find-root');
+                const root = findRoot(path.join(
+                    process.cwd(),
+                    response.path
+                ));
+                this.coverage = new Coverage(
+                    root,
+                    response.coveragePattern,
+                    response.coverageSourceMaps,
+                    response.coverageHtmlReporter);
+            }
             if (response.debug) {
                 this.headful(response.path);
             } else {
@@ -51,7 +64,11 @@ class Renderer {
                 require(pathToAdd);
             }
         });
-        mocha.run();
+        mocha.run(() => {
+            if (this.coverage) {
+                this.coverage.report(() => {});
+            }
+        });
     }
 
     headless(testPath) {
@@ -82,11 +99,17 @@ class Renderer {
                     mochaInst.addFile(pathToAdd);
                 }
             });
-            mochaInst.run(function(errorCount) {
+            mochaInst.run((errorCount) => {
                 try {
                     if (errorCount > 0) {
                         ipcRenderer.send('mocha-error', 'ping');
-                    } else {
+                    }
+                    else if (this.coverage) {
+                        this.coverage.report(() => {
+                            ipcRenderer.send('mocha-done', 'ping');
+                        });
+                    }
+                    else {
                         ipcRenderer.send('mocha-done', 'ping');
                     }
                 } catch(e) {

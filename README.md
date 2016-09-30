@@ -17,7 +17,7 @@ npm install -g floss electron-prebuilt
 Install locally within a project:
 
 ```bash
-npm install floss electron-prebuild --save-dev
+npm install floss electron-prebuilt --save-dev
 ```
 
 ## Gulp Usage
@@ -25,7 +25,7 @@ npm install floss electron-prebuild --save-dev
 ```js
 const floss = require('floss');
 gulp.task('test', function(done) {
-    floss('test/index.js', done); 
+    floss('test/index.js', done);
 });
 ```
 
@@ -73,6 +73,19 @@ console.log(options.customUrl); // logs: http://localhost:8080
 
 ## Command Line Usage
 
+### Arguments
+
+* **--path** or **-p** (String) Path to the file to test
+* **--debug** or **-d**  (Boolean) Enable to run in headful mode, default `false`.
+* **--electron** or **-e**  (String) Path to the electron to use.
+* **--reporter** or **-r**  (String) Mocha reporter type, default `spec`.
+* **--reporterOptions** or **-o**  (String) Mocha reporter options.
+* **--coveragePattern** or **-c**  (String) Glob pattern of file source to messure for coverage.
+* **--coverageHtmlReporter** or **-h**  (Boolean) Generatel HTML report for coverage, default `false`.
+* **--coverageSourceMaps** or **-s**  (Boolean) Use sourcemaps to determine coverage, default `false`.
+
+### Usage
+
 Command Line usage when installed globally:
 
 ```bash
@@ -103,14 +116,52 @@ Open tests in an Electron window where test can can be debugged with `debugger` 
 floss --path test/index.js --debug
 ```
 
-### Reporter
+### Istanbul Code Coverage
 
-Can use the same reporter options as the API mentioned above. The `reporter-options` are expressed as a querystring, for instance `varname=foo&another=bar`.
+Floss comes with istanbul integration. This will generate a json report.
+
+```bash
+floss --path test/index.js --coveragePattern lib/**/*/*.js
+```
+
+To remap the json report using sourcemaps
+
+```bash
+floss --path test/index.js --coveragePattern lib/**/*/*.js --coverageSourceMaps
+```
+
+To generate an additional html report
+
+```bash
+floss --path test/index.js \
+    --coveragePattern lib/**/*/*.js \
+    --coverageHtmlReporter
+```
+
+To generate an additional html report with source maps
+
+```bash
+floss --path test/index.js \
+    --coveragePattern lib/**/*/*.js \
+    --coverageSourceMaps \
+    --coverageHtmlReporter
+```
+
+For lists of globs put the coverage files in quotes comma or space separated
+
+```bash
+floss --path test/index.js \
+    --coveragePattern "lib/**/*/*.js, node_modules/thing/lib/thing.js"
+```
+
+### Mocha Reporter
+
+Can use the same reporter options as the API mentioned above. The `reporterOptions` are expressed as a querystring, for instance `varname=foo&another=bar`.
 
 ```bash
 floss --path test/index.js \
     --reporter=xunit \
-    --reporter-options output=report.xml
+    --reporterOptions output=report.xml
 ```
 
 ## Custom Electron Version
