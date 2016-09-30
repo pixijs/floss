@@ -8,7 +8,7 @@ const path = require('path');
 const fs = require('fs');
 const resolve = require('resolve');
 const {ipcRenderer, remote} = require('electron');
-const Coverage = require('./Coverage');
+const Coverage = require('./coverage');
 const querystring = require('querystring');
 
 require('mocha/mocha');
