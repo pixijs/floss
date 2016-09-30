@@ -42,6 +42,8 @@ function parseArgs(args) {
         .option('-c, --coveragePattern <sources>', 'Glob paths for coverage support', parseList)
         .option('-s, --coverageSourceMaps', 'Run the coverage report through sourcemap conversion')
         .option('-h, --coverageHtmlReporter', 'Also generate an html report')
+        .option('-r, --reporter [spec]', 'Mocha reporter for headless mode only')
+        .option('-o, --reporter-options [filename=report.xml]', 'Additional arguments for reporter options, query-string formatted')
         .parse(args);
     return commander;
 }

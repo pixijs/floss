@@ -8,8 +8,12 @@ const path = require('path');
 const fs = require('fs');
 const resolve = require('resolve');
 const {ipcRenderer, remote} = require('electron');
+<<<<<<< HEAD
 const Coverage = require('./Coverage');
 
+=======
+const querystring = require('querystring');
+>>>>>>> df2f055dcf2753e4d53351aeb4a4eaf5965991e1
 
 require('mocha/mocha');
 require('chai/chai');
@@ -27,7 +31,7 @@ class Renderer {
 
         ipcRenderer.on('ping', (ev, data) => {
             const response = JSON.parse(data);
-            global.options = response;
+            this.options = global.options = response;
             if(response.coveragePattern) {
                 const root = require('find-root')(path.join(process.cwd(), response.path));
                 this.coverage = new Coverage(
@@ -74,10 +78,22 @@ class Renderer {
                 ui: 'tdd'
             });
 
-            let mochaInst = new Mocha();
+            // Format the reporter options
+            let reporterOptions;
+
+            // Parse string as an object
+            if (typeof this.options.reporterOptions === "string") {
+                reporterOptions = querystring.parse(
+                    this.options.reporterOptions
+                );
+            }
+
+            const mochaInst = new Mocha({
+                reporter: this.options.reporter,
+                reporterOptions: reporterOptions
+            });
             mochaInst.ui('tdd');
             mochaInst.useColors(true);
-
             this.addFile(testPath, (pathToAdd) => {
                 if (pathToAdd) {
                     mochaInst.addFile(pathToAdd);
@@ -96,15 +112,13 @@ class Renderer {
                     else {
                         ipcRenderer.send('mocha-done', 'ping');
                     }
-                }
-                catch(err) {
-                    console.log("FLOSS - caught inner exception:", err.message);
+                } catch(e) {
+                    console.log("[floss] caught inner exception:", e.message);
                     ipcRenderer.send('mocha-error', 'ping');
                 }
             });
-        }
-        catch (e) {
-            console.log("FLOSS - caught outer exception:", e.message);
+        } catch (e) {
+            console.log("[floss] caught outer exception:", e.message);
             ipcRenderer.send('mocha-error', 'ping');
         }
     }
@@ -125,8 +139,8 @@ class Renderer {
         // if we don't do this, we get socket errors and our tests crash
         Object.defineProperty(process, 'stdout', {
             value: {
-                write: function() {
-                    remoteConsole.log.apply(remoteConsole, arguments)
+                write: function(str) {
+                    remote.process.stdout.write(str);
                 }
             }
         });

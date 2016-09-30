@@ -21,6 +21,10 @@ catch(err) {
  * @param {String} [options.electron] Path to custom electron version. If undefined
  *        will use environment variable `ELECTRON_PATH` or electron-prebuilt
  *        installed alongside.
+ * @param {String} [options.reporter=spec] Mocha reporter (non-debug mode only)
+ * @param {String|Object} [options.reporterOptions] Additional options for the reporter
+ *        useful for specifying an output file if using the 'xunit' reporter.
+ *        Options can be a querystring format, e.g., `"foo=2&bar=something"`
  * @param {Function} done Called when completed. Passes error if failed.
  */
 function floss(options, done) {
@@ -48,6 +52,15 @@ function floss(options, done) {
 
     const app = path.join(__dirname, 'electron');
     const args = JSON.stringify(options);
+
+    const isWindows = /^win/.test(process.platform);
+    if(isWindows && !path.extname(options.electron)) {
+        // In the case where floss is running in windows with the cmdline option --electron electron
+        // options.electron will just be "electron" at this point.
+        // Due to limitations with how nodejs spawns windows processes we need to add .cmd to the end of the command
+        // https://github.com/nodejs/node/issues/3675
+        options.electron += ".cmd";
+    }
 
     const childProcess = spawn(
         options.electron, [app, args], {
