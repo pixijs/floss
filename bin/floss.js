@@ -29,9 +29,6 @@ function cli(args, callback) {
  * Split the value by comma or spaces
  */
 function parseList(value) {
-    if(typeof value === 'string') {
-        return [value];
-    }
     return value.split(/[\s,]\s*/);
 }
 
