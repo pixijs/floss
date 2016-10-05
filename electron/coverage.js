@@ -16,12 +16,14 @@ class Coverage {
      * @param {String} pattern The glob pattern for files to instrument.
      * @param {Boolean} [sourceMaps=false] Use the sourcemaps
      * @param {Boolean} [htmlReporter=false] Use the HTML reporter.
+     * @param {Boolean} [debug=false] `true` if running in headful mode.
      */
-    constructor(root, pattern, sourceMaps, htmlReporter) {
+    constructor(root, pattern, sourceMaps, htmlReporter, debug) {
         this.root = root;
         this.sourceMaps = !!sourceMaps;
         this.pattern = pattern;
         this.htmlReporter = !!htmlReporter;
+        this.debug = !!debug;
         this.instrumenter = new Instrumenter();
         this.transformer = this.instrumenter.instrumentSync.bind(this.instrumenter);
         this.cov = global.__coverage__ = {};
@@ -61,6 +63,32 @@ class Coverage {
         return fn;
     }
 
+    summary() {
+        const summaryPath = path.join(this.root, 'coverage/coverage-summary.json');
+        const summary = require(summaryPath);
+
+        console.group("%cCoverage summary", 'font-weight:bold;color:gray');
+
+        for (const id in summary.total) {
+            // Ignore the lines covered
+            if (id === 'linesCovered') {
+                continue;
+            }
+            const report = summary.total[id];
+            const color = report.pct < 50 ? 'red' : (report.pct < 80 ? 'orange' : 'green');
+
+            console.log('%c%s : %i% %c( %i / %i )', 
+                'font-weight:bold;color:' + color,
+                id.charAt(0).toUpperCase() + id.slice(1), 
+                report.pct,
+                'font-weight:normal;color:gray',
+                report.covered,
+                report.total
+            );
+        }
+        console.groupEnd();
+    }
+
     /**
      * Generate the report when completed
      * @method report
@@ -92,7 +120,8 @@ class Coverage {
         const reporter = new Reporter();
 
         //defaults to basic summary and json reports
-        reporter.addAll(['text-summary', 'json']);
+        const summary = this.debug ? 'json-summary' : 'text-summary';
+        reporter.addAll([summary, 'json']);
 
         //if we're generating html and not going throiugh source maps
         if (this.htmlReporter && !this.sourceMaps) {
@@ -100,7 +129,11 @@ class Coverage {
         }
 
         reporter.write(collector, true, () => {
-            if(this.sourceMaps) {
+
+            if (this.debug) {
+                this.summary();
+            }
+            if (this.sourceMaps) {
                 //use remap-istanbul to generate the sourcemapped version of the reports
                 var remapIstanbul = require('remap-istanbul');
                 const coverageJson = path.join(this.root, 'coverage/coverage-final.json');

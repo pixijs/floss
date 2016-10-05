@@ -38,7 +38,9 @@ class Renderer {
                     root,
                     response.coveragePattern,
                     response.coverageSourceMaps,
-                    response.coverageHtmlReporter);
+                    response.coverageHtmlReporter,
+                    response.debug
+                );
             }
             if (response.debug) {
                 this.headful(response.path);
