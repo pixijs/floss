@@ -52,6 +52,7 @@ class Coverage {
      */
     stopCleanLogs() {
         console.log = console._originalLog;
+        delete console._originalLog;
     }
 
     /**
