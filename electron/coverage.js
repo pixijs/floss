@@ -16,17 +16,42 @@ class Coverage {
      * @param {String} pattern The glob pattern for files to instrument.
      * @param {Boolean} [sourceMaps=false] Use the sourcemaps
      * @param {Boolean} [htmlReporter=false] Use the HTML reporter.
+     * @param {Boolean} [debug=false] `true` to run in headful mode.
      */
-    constructor(root, pattern, sourceMaps, htmlReporter) {
+    constructor(root, pattern, sourceMaps, htmlReporter, debug) {
         this.root = root;
         this.sourceMaps = !!sourceMaps;
         this.pattern = pattern;
         this.htmlReporter = !!htmlReporter;
+        this.debug = !!debug;
         this.instrumenter = new Instrumenter();
         this.transformer = this.instrumenter.instrumentSync.bind(this.instrumenter);
         this.cov = global.__coverage__ = {};
         this.matched = this.match();
         hook.hookRequire(this.matched, this.transformer, {});
+    }
+
+    /**
+     * Start sanitizing the logs of ANSI colors to make more readible
+     * @method cleanLogs
+     */
+    cleanLogs() {
+        const stripAnsi = require('strip-ansi');
+        console._originalLog = console.log;
+        console.log = function () {
+            for (let i = 0; i < arguments.length; i++) {
+                arguments[i] = stripAnsi(arguments[i]);
+            }
+            this._originalLog.apply(this, arguments);
+        }
+    }
+
+    /**
+     * Stop stop cleaning logs
+     * @method stopCleanLogs
+     */
+    stopCleanLogs() {
+        console.log = console._originalLog;
     }
 
     /**
@@ -67,6 +92,9 @@ class Coverage {
      * @param {Function} done Callback when completed.
      */
     report(done) {
+        if (this.debug) {
+            this.cleanLogs();
+        }
         for (const file of this.matched.files) {
             if (!this.cov[file]) {
                 // Files that are not touched by code ran by the test runner is
@@ -110,10 +138,16 @@ class Coverage {
                     remapReporters['html'] = path.join(this.root, 'coverage');
                 }
                 remapIstanbul(coverageJson, remapReporters).then(() => {
+                    if (this.debug) {
+                        this.stopCleanLogs();
+                    }
                     done();
                 });
             }
             else {
+                if (this.debug) {
+                    this.stopCleanLogs();
+                }
                 done();
             }
         });
