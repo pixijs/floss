@@ -60,7 +60,8 @@
     "remap-istanbul": "^0.6.4",
     "resolve": "^1.1.7",
     "sinon": "^1.17.4",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "strip-ansi": "^3.0.1"
   },
   "peerDependencies": {
     "electron-prebuilt": "^1.0.0"
