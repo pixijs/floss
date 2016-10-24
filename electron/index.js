@@ -11,7 +11,7 @@ const htmlPath = path.join(__dirname, 'index.html');
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow = null;
 
-// Get the configuration path 
+// Get the configuration path
 const configPath = path.join(app.getPath('userData'), 'config.json');
 
 // This method will be called when Electron has finished
@@ -34,7 +34,7 @@ app.on('activate', function() {
 function createWindow() {
 
     let args = JSON.parse(process.argv.slice(2)[0]);
-    
+
     // Get the window bounds
     const options = restoreBounds();
 
@@ -54,8 +54,14 @@ function createWindow() {
     // and load the index.html of the app.
     mainWindow.loadURL('file://' + htmlPath);
 
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools('bottom');
+    // don't show the dev tools if you're not in headless mode. this is to
+    // avoid having breakpoints and "pause on caught / uncaught exceptions" halting
+    // the runtime.  plus, if you're in headless mode, having the devtools open is probably
+    // not very useful anyway 
+    if(args.debug) {
+        // Open the DevTools.
+        mainWindow.webContents.openDevTools('bottom');
+    }
 
     mainWindow.webContents.on('did-finish-load', function() {
         mainWindow.webContents.send('ping', JSON.stringify(args));
