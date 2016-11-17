@@ -64,7 +64,8 @@ function floss(options, done) {
 
     const childProcess = spawn(
         options.electron, [app, args], {
-            stdio: 'inherit'
+            stdio: 'inherit',
+            env: {}
         }
     );
     childProcess.on('close', (code) => {
