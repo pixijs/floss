@@ -62,10 +62,14 @@ function floss(options, done) {
         options.electron += ".cmd";
     }
 
+    //copy the environment and remove things that would prevent Floss from running properly
+    const envCopy = Object.assign({}, process.env);
+    delete envCopy.ELECTRON_RUN_AS_NODE;
+    delete envCopy.ELECTRON_NO_ATTACH_CONSOLE;
     const childProcess = spawn(
         options.electron, [app, args], {
             stdio: 'inherit',
-            env: {}
+            env: envCopy
         }
     );
     childProcess.on('close', (code) => {
