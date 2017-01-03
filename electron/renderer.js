@@ -115,12 +115,12 @@ class Renderer {
                         ipcRenderer.send('mocha-done', 'ping');
                     }
                 } catch(e) {
-                    console.log("[floss] caught inner exception:", e.message);
+                    console.log("[floss] caught inner exception:", e.message, e.stack);
                     ipcRenderer.send('mocha-error', 'ping');
                 }
             });
         } catch (e) {
-            console.log("[floss] caught outer exception:", e.message);
+            console.log("[floss] caught outer exception:", e.message, e.stack);
             ipcRenderer.send('mocha-error', 'ping');
         }
     }
