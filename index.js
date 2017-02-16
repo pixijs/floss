@@ -68,10 +68,13 @@ function floss(options, done) {
     delete envCopy.ELECTRON_NO_ATTACH_CONSOLE;
     const childProcess = spawn(
         options.electron, [app, args], {
-            stdio: 'inherit',
+            stdio: 'pipe',
             env: envCopy
         }
     );
+    childProcess.stdout.on('data', (data) => {
+        process.stdout.write(data);
+    });
     childProcess.on('close', (code) => {
         if (code !== 0) {
             return done(new Error('Mocha tests failed'));
