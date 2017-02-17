@@ -6,7 +6,7 @@ const spawn = require('child_process').spawn;
 
 let electron;
 try {
-    electron = require('electron-prebuilt');
+    electron = require('electron');
 }
 catch(err) {
     // silence is golden
@@ -19,7 +19,7 @@ catch(err) {
  * @param {String} [options.path] Path to the JS file to run.
  * @param {Boolean} [options.debug] `true` opens in headful mode.
  * @param {String} [options.electron] Path to custom electron version. If undefined
- *        will use environment variable `ELECTRON_PATH` or electron-prebuilt
+ *        will use environment variable `ELECTRON_PATH` or electron
  *        installed alongside.
  * @param {String} [options.reporter=spec] Mocha reporter (non-debug mode only)
  * @param {String|Object} [options.reporterOptions] Additional options for the reporter
@@ -46,7 +46,7 @@ function floss(options, done) {
     }
 
     if (!options.electron) {
-        console.error("Error: Unable to find Electron. Install 'electron-prebuilt' alongside Floss.".red);
+        console.error("Error: Unable to find Electron. Install 'electron' alongside Floss.".red);
         return done();
     }
 
