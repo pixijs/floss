@@ -21,6 +21,8 @@ global.assert = chai.assert;
 global.expect = chai.expect;
 global.chai.use(sinonChai);
 
+let globalLoggers = {};
+
 class Renderer {
 
     constructor(linkId) {
@@ -53,6 +55,17 @@ class Renderer {
         const mochaPath = path.dirname(resolve.sync('mocha', {basedir: __dirname}));
         const link = document.getElementById(linkId);
         link.href = path.join(mochaPath, 'mocha.css');
+
+        if (!this.options.quiet) {
+            for (let name in console) {
+                globalLoggers[name] = console[name];
+                console[name] = function(...args) {
+                    ipcRenderer.send(name, ...args);
+                }
+            }
+        } else {
+            alert("QUIET IS ON");
+        }
     }
 
     headful(testPath) {
@@ -74,6 +87,8 @@ class Renderer {
     }
 
     headless(testPath) {
+        console.log("PUT THIS IN STDOUT", {test: "one", blah: "three"});
+        console.error("PUT THIS IN STDERR");
         try {
             this.redirectOutputToConsole();
             mocha.setup({

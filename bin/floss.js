@@ -7,6 +7,10 @@ const floss = require('../');
 require('colors');
 
 function cli(args, callback) {
+    console.log("THAGBERG THAGBERG THAGBERG THAGBERG");
+    console.log("THAGBERG THAGBERG THAGBERG THAGBERG");
+    console.log("THAGBERG THAGBERG THAGBERG THAGBERG");
+    console.log("THAGBERG THAGBERG THAGBERG THAGBERG");
     const parsedArgs = parseArgs(args);
     // console.log(parsedArgs.coveragePattern);
     if (!parsedArgs.path) {
@@ -41,6 +45,7 @@ function parseArgs(args) {
         .option('-h, --coverageHtmlReporter', 'Also generate an html report')
         .option('-r, --reporter [spec]', 'Mocha reporter for headless mode only')
         .option('-o, --reporterOptions [filename=report.xml]', 'Additional arguments for reporter options, query-string formatted')
+        .option('-q, --quiet', 'Prevent console.(log/info/error/warn) messages from appearing in STDOUT')
         .parse(args);
     return commander;
 }
