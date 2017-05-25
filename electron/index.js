@@ -40,15 +40,13 @@ function createWindow() {
 
     options.show = args.debug;
 
-    if (!args.quiet) {
+    // Create handlers for piping rendered logs to console
+    if (!args.debug && !args.quiet) {
         for (let name in console) {
-            ipcMain.on(name, function(...args) {
-                args.shift();
+            ipcMain.on(name, function(event, args) {
                 console[name](...args);
             })
         }
-    } else {
-        console.log("QUIET IS ON");
     }
 
 

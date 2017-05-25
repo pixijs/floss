@@ -7,10 +7,6 @@ const floss = require('../');
 require('colors');
 
 function cli(args, callback) {
-    console.log("THAGBERG THAGBERG THAGBERG THAGBERG");
-    console.log("THAGBERG THAGBERG THAGBERG THAGBERG");
-    console.log("THAGBERG THAGBERG THAGBERG THAGBERG");
-    console.log("THAGBERG THAGBERG THAGBERG THAGBERG");
     const parsedArgs = parseArgs(args);
     // console.log(parsedArgs.coveragePattern);
     if (!parsedArgs.path) {
