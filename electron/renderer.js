@@ -21,10 +21,13 @@ global.assert = chai.assert;
 global.expect = chai.expect;
 global.chai.use(sinonChai);
 
+const globalLoggers = {};
+
 class Renderer {
 
     constructor(linkId) {
 
+        let isHeadless;
         ipcRenderer.on('ping', (ev, data) => {
             const response = JSON.parse(data);
             this.options = global.options = response;
@@ -46,7 +49,10 @@ class Renderer {
                 this.headful(response.path);
             } else {
                 this.headless(response.path);
+                isHeadless = true;
             }
+
+            this.setupConsoleOutput(this.options.quiet, isHeadless);
         });
 
         // Add the stylesheet
@@ -75,7 +81,6 @@ class Renderer {
 
     headless(testPath) {
         try {
-            this.redirectOutputToConsole();
             mocha.setup({
                 ui: 'tdd'
             });
@@ -125,17 +130,21 @@ class Renderer {
         }
     }
 
-    redirectOutputToConsole() {
-
+    setupConsoleOutput(isQuiet, isHeadless) {
         const remoteConsole = remote.getGlobal('console');
 
-        // we have to do this so that mocha output doesn't look like shit
-        console.log = function() {
-            remoteConsole.log.apply(remoteConsole, arguments)
-        }
+        if (isQuiet) {
+            if (isHeadless) {
+                console.log = function() {
+                    remoteConsole.log.apply(remoteConsole, arguments)
+                }
 
-        console.dir = function() {
-            remoteConsole.dir.apply(remoteConsole, arguments)
+                console.dir = function() {
+                    remoteConsole.dir.apply(remoteConsole, arguments)
+                }
+            }
+        } else if (isHeadless){
+            bindConsole();
         }
 
         // if we don't do this, we get socket errors and our tests crash
@@ -146,6 +155,21 @@ class Renderer {
                 }
             }
         });
+
+        // Create new bindings for `console` functions
+        // Use default console[name] and also send IPC
+        // log so we can log to stdout
+        function bindConsole() {
+            for (const name in console) {
+                if (typeof console[name] === 'function') {
+                    globalLoggers[name] = console[name];
+                    console[name] = function(...args) {
+                        globalLoggers[name].apply(console, args);
+                        ipcRenderer.send(name, args);
+                    }
+                }
+            }
+        }
     }
 
     addFile(testPath, callback) {

@@ -40,6 +40,16 @@ function createWindow() {
 
     options.show = args.debug;
 
+    // Create handlers for piping rendered logs to console
+    if (!args.debug && !args.quiet) {
+        for (let name in console) {
+            ipcMain.on(name, function(event, args) {
+                console[name](...args);
+            })
+        }
+    }
+
+
     // Create the browser window.
     mainWindow = new BrowserWindow(options);
 
@@ -57,7 +67,7 @@ function createWindow() {
     // don't show the dev tools if you're not in headless mode. this is to
     // avoid having breakpoints and "pause on caught / uncaught exceptions" halting
     // the runtime.  plus, if you're in headless mode, having the devtools open is probably
-    // not very useful anyway 
+    // not very useful anyway
     if(args.debug) {
         // Open the DevTools.
         mainWindow.webContents.openDevTools('bottom');
