@@ -1,11 +1,16 @@
 'use strict';
 
-describe('babys first test', ()=>{
-  it('should always be true - dummy test', function(){
-    expect(true).to.be.ok;
-  });
+describe('Floss Tests', ()=>{
+  describe("logging", function() {
+    it('should not hang when logging objects with circular references in headless mode', function(){
+      let foo = {        
+        get bar() {
+          return this.bar();
+        },
+      }
 
-  it('should evaluate to true', ()=>{
-    expect(false).to.not.be.ok;
+      console.log(foo);
+      process.stdout.write(foo);
+    });
   });
 });
