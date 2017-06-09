@@ -23,8 +23,8 @@ global.expect = chai.expect;
 global.chai.use(sinonChai);
 
 const defaultLogDepth = 3;
-const globalLoggers = {};
-
+// TODO this needs to be reimplemented
+// const globalLoggers = {};
 
 class Renderer {
 
@@ -168,20 +168,21 @@ class Renderer {
             });
         }
 
-        // Create new bindings for `console` functions
-        // Use default console[name] and also send IPC
-        // log so we can log to stdout
-        function bindConsole() {
-            for (const name in console) {
-                if (typeof console[name] === 'function') {
-                    globalLoggers[name] = console[name];
-                    console[name] = function(...args) {
-                        globalLoggers[name].apply(console, args);
-                        ipcRenderer.send(name, args);
-                    }
-                }
-            }
-        }
+        // TODO this needs to be reimplemented
+        // // Create new bindings for `console` functions
+        // // Use default console[name] and also send IPC
+        // // log so we can log to stdout
+        // function bindConsole() {
+        //     for (const name in console) {
+        //         if (typeof console[name] === 'function') {
+        //             globalLoggers[name] = console[name];
+        //             console[name] = function(...args) {
+        //                 globalLoggers[name].apply(console, args);
+        //                 ipcRenderer.send(name, args);
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     addFile(testPath, callback) {
