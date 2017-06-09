@@ -42,6 +42,7 @@ function parseArgs(args) {
         .option('-r, --reporter [spec]', 'Mocha reporter for headless mode only')
         .option('-o, --reporterOptions [filename=report.xml]', 'Additional arguments for reporter options, query-string formatted')
         .option('-l, --logdepth [int]', 'When logging complex objects we truncate convert the complex object to a string truncated to a default depth of 3. This property allows to override that.')
+        .option('-q, --quiet', 'Prevent console.(log/info/error/warn) messages from appearing in STDOUT')
         .parse(args);
     return commander;
 }

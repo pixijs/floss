@@ -37,6 +37,7 @@ function floss(options, done) {
 
     options = assign({
         debug: false,
+        quiet: false,
         electron: process.env.ELECTRON_PATH || electron
     }, options);
 

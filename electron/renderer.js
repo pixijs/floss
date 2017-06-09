@@ -22,12 +22,17 @@ global.assert = chai.assert;
 global.expect = chai.expect;
 global.chai.use(sinonChai);
 
+<<<<<<< HEAD
 const defaultLogDepth = 3;
+=======
+const globalLoggers = {};
+>>>>>>> v1
 
 class Renderer {
 
     constructor(linkId) {
 
+        let isHeadless;
         ipcRenderer.on('ping', (ev, data) => {
             const response = JSON.parse(data);
             this.options = global.options = response;
@@ -50,7 +55,10 @@ class Renderer {
                 this.headful(response.path);
             } else {
                 this.headless(response.path);
+                isHeadless = true;
             }
+
+            this.setupConsoleOutput(this.options.quiet, isHeadless);
         });
 
         // Add the stylesheet
@@ -79,7 +87,6 @@ class Renderer {
 
     headless(testPath) {
         try {
-            this.redirectOutputToConsole();
             mocha.setup({
                 ui: 'tdd'
             });
@@ -129,38 +136,54 @@ class Renderer {
         }
     }
 
-    redirectOutputToConsole() {
+    setupConsoleOutput(isQuiet, isHeadless) {
+        if (!isQuiet && isHeadless) {
+            const remoteConsole = remote.getGlobal('console');
+            
+            // we have to do this so that mocha output doesn't look like shit
+            console.log = function() {
+                let depthLimitArgs = Array.from(arguments).map((arg)=>{
+                    if(typeof arg === "object") {
+                        return util.inspect(arg, {depth: this.logDepth });                
+                    } else {
+                        return arg;
+                    }
+                });
+                remoteConsole.log.apply(remoteConsole, depthLimitArgs);
+            }
 
-        const remoteConsole = remote.getGlobal('console');
+            console.dir = function() {
+                remoteConsole.dir.apply(remoteConsole, arguments);
+            }
 
-        // we have to do this so that mocha output doesn't look like shit
-        console.log = function() {
-            let depthLimitArgs = Array.from(arguments).map((arg)=>{
-                if(typeof arg === "object") {
-                    return util.inspect(arg, {depth: this.logDepth });                
-                } else {
-                    return arg;
+            // if we don't do this, we get socket errors and our tests crash
+            Object.defineProperty(process, 'stdout', {
+                value: {
+                    write: function(str) {
+                        let depthLimitStr = str;
+                        if(typeof depthLimitStr === "object") {
+                            depthLimitStr = util.inspect(depthLimitStr, {depth: this.logDepth });
+                        }
+                        remote.process.stdout.write(depthLimitStr);
+                    }
                 }
             });
-            remoteConsole.log.apply(remoteConsole, depthLimitArgs);
         }
 
-        console.dir = function() {
-            remoteConsole.dir.apply(remoteConsole, arguments);
-        }
-
-        // if we don't do this, we get socket errors and our tests crash
-        Object.defineProperty(process, 'stdout', {
-            value: {
-                write: function(str) {
-                    let depthLimitStr = str;
-                    if(typeof depthLimitStr === "object") {
-                        depthLimitStr = util.inspect(depthLimitStr, {depth: this.logDepth });
+        // Create new bindings for `console` functions
+        // Use default console[name] and also send IPC
+        // log so we can log to stdout
+        function bindConsole() {
+            for (const name in console) {
+                if (typeof console[name] === 'function') {
+                    globalLoggers[name] = console[name];
+                    console[name] = function(...args) {
+                        globalLoggers[name].apply(console, args);
+                        ipcRenderer.send(name, args);
                     }
-                    remote.process.stdout.write(depthLimitStr);
                 }
             }
-        });
+        }
     }
 
     addFile(testPath, callback) {

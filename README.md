@@ -77,6 +77,7 @@ console.log(options.customUrl); // logs: http://localhost:8080
 
 * **--path** or **-p** (String) Path to the file to test
 * **--debug** or **-d**  (Boolean) Enable to run in headful mode, default `false`.
+* **--quiet** or **-q** (Boolean) Prevent console[log/info/error/warn/dir] messages from appearing in `stdout`.
 * **--electron** or **-e**  (String) Path to the electron to use.
 * **--reporter** or **-r**  (String) Mocha reporter type, default `spec`.
 * **--reporterOptions** or **-o**  (String) Mocha reporter options.
