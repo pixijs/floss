@@ -11,13 +11,13 @@ Uses Electron to provide a Mocha unit-testing environment which can be run headl
 Install globally:
 
 ```bash
-npm install -g floss electron-prebuilt
+npm install -g floss electron
 ```
 
 Install locally within a project:
 
 ```bash
-npm install floss electron-prebuilt --save-dev
+npm install floss electron --save-dev
 ```
 
 ## Gulp Usage
@@ -173,7 +173,7 @@ Some application may require a specific version of Electron. Floss uses Electron
 gulp.task('test', function(done) {
     floss({
         path: 'test/index.js',
-        electron: require('electron-prebuilt')
+        electron: require('electron')
     }, done);
 });
 ```

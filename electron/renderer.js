@@ -10,6 +10,7 @@ const resolve = require('resolve');
 const {ipcRenderer, remote} = require('electron');
 const Coverage = require('./coverage');
 const querystring = require('querystring');
+const util = require('util');
 
 require('mocha/mocha');
 require('chai/chai');
@@ -21,7 +22,11 @@ global.assert = chai.assert;
 global.expect = chai.expect;
 global.chai.use(sinonChai);
 
+<<<<<<< HEAD
+const defaultLogDepth = 3;
+=======
 const globalLoggers = {};
+>>>>>>> v1
 
 class Renderer {
 
@@ -45,6 +50,7 @@ class Renderer {
                     response.debug
                 );
             }
+            this.logDepth = response.logdepth || defaultLogDepth;
             if (response.debug) {
                 this.headful(response.path);
             } else {
@@ -131,30 +137,38 @@ class Renderer {
     }
 
     setupConsoleOutput(isQuiet, isHeadless) {
-        const remoteConsole = remote.getGlobal('console');
-
-        if (isQuiet) {
-            if (isHeadless) {
-                console.log = function() {
-                    remoteConsole.log.apply(remoteConsole, arguments)
-                }
-
-                console.dir = function() {
-                    remoteConsole.dir.apply(remoteConsole, arguments)
-                }
+        if (!isQuiet && isHeadless) {
+            const remoteConsole = remote.getGlobal('console');
+            
+            // we have to do this so that mocha output doesn't look like shit
+            console.log = function() {
+                let depthLimitArgs = Array.from(arguments).map((arg)=>{
+                    if(typeof arg === "object") {
+                        return util.inspect(arg, {depth: this.logDepth });                
+                    } else {
+                        return arg;
+                    }
+                });
+                remoteConsole.log.apply(remoteConsole, depthLimitArgs);
             }
-        } else if (isHeadless){
-            bindConsole();
+
+            console.dir = function() {
+                remoteConsole.dir.apply(remoteConsole, arguments);
+            }
+
+            // if we don't do this, we get socket errors and our tests crash
+            Object.defineProperty(process, 'stdout', {
+                value: {
+                    write: function(str) {
+                        let depthLimitStr = str;
+                        if(typeof depthLimitStr === "object") {
+                            depthLimitStr = util.inspect(depthLimitStr, {depth: this.logDepth });
+                        }
+                        remote.process.stdout.write(depthLimitStr);
+                    }
+                }
+            });
         }
-
-        // if we don't do this, we get socket errors and our tests crash
-        Object.defineProperty(process, 'stdout', {
-            value: {
-                write: function(str) {
-                    remote.process.stdout.write(str);
-                }
-            }
-        });
 
         // Create new bindings for `console` functions
         // Use default console[name] and also send IPC
