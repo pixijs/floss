@@ -22,6 +22,8 @@ global.assert = chai.assert;
 global.expect = chai.expect;
 global.chai.use(sinonChai);
 
+const defaultLogDepth = 3;
+
 class Renderer {
 
     constructor(linkId) {
@@ -43,6 +45,7 @@ class Renderer {
                     response.debug
                 );
             }
+            this.logDepth = response.logdepth || defaultLogDepth;
             if (response.debug) {
                 this.headful(response.path);
             } else {
@@ -134,7 +137,7 @@ class Renderer {
         console.log = function() {
             let depthLimitArgs = Array.from(arguments).map((arg)=>{
                 if(typeof arg === "object") {
-                    return util.inspect(arg, {depth:3});                
+                    return util.inspect(arg, {depth: this.logDepth });                
                 } else {
                     return arg;
                 }
@@ -152,7 +155,7 @@ class Renderer {
                 write: function(str) {
                     let depthLimitStr = str;
                     if(typeof depthLimitStr === "object") {
-                        depthLimitStr = util.inspect(depthLimitStr, {depth:3});
+                        depthLimitStr = util.inspect(depthLimitStr, {depth: this.logDepth });
                     }
                     remote.process.stdout.write(depthLimitStr);
                 }
