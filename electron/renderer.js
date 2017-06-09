@@ -10,6 +10,7 @@ const resolve = require('resolve');
 const {ipcRenderer, remote} = require('electron');
 const Coverage = require('./coverage');
 const querystring = require('querystring');
+const util = require('util');
 
 require('mocha/mocha');
 require('chai/chai');
@@ -131,18 +132,29 @@ class Renderer {
 
         // we have to do this so that mocha output doesn't look like shit
         console.log = function() {
-            remoteConsole.log.apply(remoteConsole, arguments)
+            let depthLimitArgs = Array.from(arguments).map((arg)=>{
+                if(typeof arg === "object") {
+                    return util.inspect(arg, {depth:3});                
+                } else {
+                    return arg;
+                }
+            });
+            remoteConsole.log.apply(remoteConsole, depthLimitArgs);
         }
 
         console.dir = function() {
-            remoteConsole.dir.apply(remoteConsole, arguments)
+            remoteConsole.dir.apply(remoteConsole, arguments);
         }
 
         // if we don't do this, we get socket errors and our tests crash
         Object.defineProperty(process, 'stdout', {
             value: {
                 write: function(str) {
-                    remote.process.stdout.write(str);
+                    let depthLimitStr = str;
+                    if(typeof depthLimitStr === "object") {
+                        depthLimitStr = util.inspect(depthLimitStr, {depth:3});
+                    }
+                    remote.process.stdout.write(depthLimitStr);
                 }
             }
         });
