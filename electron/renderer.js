@@ -29,7 +29,6 @@ class Renderer {
 
     constructor(linkId) {
 
-        let isHeadless = false;
         ipcRenderer.on('ping', (ev, data) => {
             const response = JSON.parse(data);
             this.options = global.options = response;
@@ -52,10 +51,9 @@ class Renderer {
                 this.headful(response.path);
             } else {
                 this.headless(response.path);
-                isHeadless = true;
             }
 
-            this.setupConsoleOutput(this.options.quiet, isHeadless);
+            this.setupConsoleOutput(this.options.noisy);
         });
 
         // Add the stylesheet
@@ -133,8 +131,10 @@ class Renderer {
         }
     }
 
-    setupConsoleOutput(isQuiet, isHeadless) {
-        if (!isQuiet && isHeadless) {
+    setupConsoleOutput(isNoisy) {
+        if (isNoisy) {
+            bindConsole();
+        } else {
             const remoteConsole = remote.getGlobal('console');
 
             // we have to do this so that mocha output doesn't look like shit
@@ -165,8 +165,6 @@ class Renderer {
                     }
                 }
             });
-        } else if (isHeadless) {
-            bindConsole();
         }
 
         // Create new bindings for `console` functions
