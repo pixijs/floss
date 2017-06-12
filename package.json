@@ -24,12 +24,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:jiborobot/floss.git"
+    "url": "git@github.com:pixijs/floss.git"
   },
   "bugs": {
-    "url": "https://github.com/jiborobot/floss/issues"
+    "url": "https://github.com/pixijs/floss/issues"
   },
-  "homepage": "https://github.com/jiborobot/floss",
+  "homepage": "https://github.com/pixijs/floss",
   "engines": {
     "node": ">=4.0"
   },
