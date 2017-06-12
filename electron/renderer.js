@@ -23,14 +23,13 @@ global.expect = chai.expect;
 global.chai.use(sinonChai);
 
 const defaultLogDepth = 3;
-// TODO this needs to be reimplemented
-// const globalLoggers = {};
+const globalLoggers = {};
 
 class Renderer {
 
     constructor(linkId) {
 
-        let isHeadless;
+        let isHeadless = false;
         ipcRenderer.on('ping', (ev, data) => {
             const response = JSON.parse(data);
             this.options = global.options = response;
@@ -137,12 +136,12 @@ class Renderer {
     setupConsoleOutput(isQuiet, isHeadless) {
         if (!isQuiet && isHeadless) {
             const remoteConsole = remote.getGlobal('console');
-            
+
             // we have to do this so that mocha output doesn't look like shit
             console.log = function() {
                 let depthLimitArgs = Array.from(arguments).map((arg)=>{
                     if(typeof arg === "object") {
-                        return util.inspect(arg, {depth: this.logDepth });                
+                        return util.inspect(arg, {depth: this.logDepth });
                     } else {
                         return arg;
                     }
@@ -166,23 +165,24 @@ class Renderer {
                     }
                 }
             });
+        } else if (isHeadless) {
+            bindConsole();
         }
 
-        // TODO this needs to be reimplemented
-        // // Create new bindings for `console` functions
-        // // Use default console[name] and also send IPC
-        // // log so we can log to stdout
-        // function bindConsole() {
-        //     for (const name in console) {
-        //         if (typeof console[name] === 'function') {
-        //             globalLoggers[name] = console[name];
-        //             console[name] = function(...args) {
-        //                 globalLoggers[name].apply(console, args);
-        //                 ipcRenderer.send(name, args);
-        //             }
-        //         }
-        //     }
-        // }
+        // Create new bindings for `console` functions
+        // Use default console[name] and also send IPC
+        // log so we can log to stdout
+        function bindConsole() {
+            for (const name in console) {
+                if (typeof console[name] === 'function') {
+                    globalLoggers[name] = console[name];
+                    console[name] = function(...args) {
+                        globalLoggers[name].apply(console, args);
+                        ipcRenderer.send(name, args);
+                    }
+                }
+            }
+        }
     }
 
     addFile(testPath, callback) {
