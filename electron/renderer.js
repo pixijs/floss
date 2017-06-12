@@ -175,6 +175,11 @@ class Renderer {
                 if (typeof console[name] === 'function') {
                     globalLoggers[name] = console[name];
                     console[name] = function(...args) {
+                        for (let arg of args) {
+                            if (typeof arg === 'object') {
+                                arg = util.inspect(arg, {depth: this.logDepth});
+                            }
+                        }
                         globalLoggers[name].apply(console, args);
                         ipcRenderer.send(name, args);
                     }
