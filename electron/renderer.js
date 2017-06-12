@@ -23,14 +23,12 @@ global.expect = chai.expect;
 global.chai.use(sinonChai);
 
 const defaultLogDepth = 3;
-// TODO this needs to be reimplemented
-// const globalLoggers = {};
+const globalLoggers = {};
 
 class Renderer {
 
     constructor(linkId) {
 
-        let isHeadless;
         ipcRenderer.on('ping', (ev, data) => {
             const response = JSON.parse(data);
             this.options = global.options = response;
@@ -53,10 +51,9 @@ class Renderer {
                 this.headful(response.path);
             } else {
                 this.headless(response.path);
-                isHeadless = true;
             }
 
-            this.setupConsoleOutput(this.options.quiet, isHeadless);
+            this.setupConsoleOutput(this.options.noisy);
         });
 
         // Add the stylesheet
@@ -134,15 +131,17 @@ class Renderer {
         }
     }
 
-    setupConsoleOutput(isQuiet, isHeadless) {
-        if (!isQuiet && isHeadless) {
+    setupConsoleOutput(isNoisy) {
+        if (isNoisy) {
+            bindConsole();
+        } else {
             const remoteConsole = remote.getGlobal('console');
-            
+
             // we have to do this so that mocha output doesn't look like shit
             console.log = function() {
                 let depthLimitArgs = Array.from(arguments).map((arg)=>{
                     if(typeof arg === "object") {
-                        return util.inspect(arg, {depth: this.logDepth });                
+                        return util.inspect(arg, {depth: this.logDepth });
                     } else {
                         return arg;
                     }
@@ -168,21 +167,25 @@ class Renderer {
             });
         }
 
-        // TODO this needs to be reimplemented
-        // // Create new bindings for `console` functions
-        // // Use default console[name] and also send IPC
-        // // log so we can log to stdout
-        // function bindConsole() {
-        //     for (const name in console) {
-        //         if (typeof console[name] === 'function') {
-        //             globalLoggers[name] = console[name];
-        //             console[name] = function(...args) {
-        //                 globalLoggers[name].apply(console, args);
-        //                 ipcRenderer.send(name, args);
-        //             }
-        //         }
-        //     }
-        // }
+        // Create new bindings for `console` functions
+        // Use default console[name] and also send IPC
+        // log so we can log to stdout
+        function bindConsole() {
+            for (const name in console) {
+                if (typeof console[name] === 'function') {
+                    globalLoggers[name] = console[name];
+                    console[name] = function(...args) {
+                        for (let arg of args) {
+                            if (typeof arg === 'object') {
+                                arg = util.inspect(arg, {depth: this.logDepth});
+                            }
+                        }
+                        globalLoggers[name].apply(console, args);
+                        ipcRenderer.send(name, args);
+                    }
+                }
+            }
+        }
     }
 
     addFile(testPath, callback) {

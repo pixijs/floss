@@ -41,7 +41,7 @@ function createWindow() {
     options.show = args.debug;
 
     // Create handlers for piping rendered logs to console
-    if (!args.debug && !args.quiet) {
+    if (!args.debug && args.noisy) {
         for (let name in console) {
             ipcMain.on(name, function(event, args) {
                 console[name](...args);
