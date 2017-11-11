@@ -27,32 +27,41 @@ class Renderer {
 
     constructor(linkId) {
 
-        let isHeadless;
         ipcRenderer.on('ping', (ev, data) => {
-            const response = JSON.parse(data);
-            this.options = global.options = response;
-            if (response.coveragePattern) {
+            this.options = global.options = JSON.parse(data);
+            const {
+                path,
+                debug,
+                quiet,
+                coveragePattern,
+                coverageSourceMaps,
+                coverageHtmlReporter
+            } = this.options;
+
+            if (coveragePattern) {
                 const findRoot = require('find-root');
                 const root = findRoot(path.join(
                     process.cwd(),
-                    response.path
+                    path
                 ));
                 this.coverage = new Coverage(
                     root,
-                    response.coveragePattern,
-                    response.coverageSourceMaps,
-                    response.coverageHtmlReporter,
-                    response.debug
+                    coveragePattern,
+                    coverageSourceMaps,
+                    coverageHtmlReporter,
+                    debug
                 );
             }
-            if (response.debug) {
-                this.headful(response.path);
-            } else {
-                this.headless(response.path);
-                isHeadless = true;
-            }
 
-            this.setupConsoleOutput(this.options.quiet, isHeadless);
+            // Do this before to catch any errors outside mocha running
+            // for instance errors on the page like test's requires
+            this.setupConsoleOutput(quiet, !debug);
+
+            if (debug) {
+                this.headful(path);
+            } else {
+                this.headless(path);
+            }
         });
 
         // Add the stylesheet
@@ -120,12 +129,12 @@ class Renderer {
                         ipcRenderer.send('mocha-done', 'ping');
                     }
                 } catch(e) {
-                    console.log("[floss] caught inner exception:", e.message, e.stack);
+                    console.log(`[floss]: ${e.stack || e.message || e}`);
                     ipcRenderer.send('mocha-error', 'ping');
                 }
             });
         } catch (e) {
-            console.log("[floss] caught outer exception:", e.message, e.stack);
+            console.log(`[floss]: ${e.stack || e.message || e}`);
             ipcRenderer.send('mocha-error', 'ping');
         }
     }

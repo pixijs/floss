@@ -50,7 +50,7 @@
   ],
   "dependencies": {
     "chai": "^3.5.0",
-    "colors": "^1.1.2",
+    "chalk": "^2.3.0",
     "commander": "^2.9.0",
     "find-root": "^1.0.0",
     "glob": "^7.1.0",

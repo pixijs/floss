@@ -2,15 +2,14 @@
 'use strict';
 
 const commander = require('commander');
+const chalk = require('chalk');
 const floss = require('../');
-
-require('colors');
 
 function cli(args, callback) {
     const parsedArgs = parseArgs(args);
     // console.log(parsedArgs.coveragePattern);
     if (!parsedArgs.path) {
-        console.error("Error, no path specified.".red);
+        console.error(chalk.red("Error, no path specified."));
         parsedArgs.outputHelp();
         return;
     }
