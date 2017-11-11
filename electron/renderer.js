@@ -4,7 +4,7 @@ const Mocha = require('mocha');
 const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
-const path = require('path');
+const pathNode = require('path');
 const fs = require('fs');
 const resolve = require('resolve');
 const {ipcRenderer, remote} = require('electron');
@@ -40,7 +40,7 @@ class Renderer {
 
             if (coveragePattern) {
                 const findRoot = require('find-root');
-                const root = findRoot(path.join(
+                const root = findRoot(pathNode.join(
                     process.cwd(),
                     path
                 ));
@@ -65,9 +65,9 @@ class Renderer {
         });
 
         // Add the stylesheet
-        const mochaPath = path.dirname(resolve.sync('mocha', {basedir: __dirname}));
+        const mochaPath = pathNode.dirname(resolve.sync('mocha', {basedir: __dirname}));
         const link = document.getElementById(linkId);
-        link.href = path.join(mochaPath, 'mocha.css');
+        link.href = pathNode.join(mochaPath, 'mocha.css');
     }
 
     headful(testPath) {
@@ -182,13 +182,13 @@ class Renderer {
     }
 
     addFile(testPath, callback) {
-        testPath = path.resolve(testPath);
+        testPath = pathNode.resolve(testPath);
 
         if (fs.existsSync(testPath)) {
             // if a single directory, find the index.js file and include that
             if (fs.statSync(testPath).isDirectory()) {
 
-                let indexFile = path.join(testPath, "index.js");
+                let indexFile = pathNode.join(testPath, "index.js");
 
                 console.log("checking for index file: ", indexFile);
                 if (fs.existsSync(indexFile)) {
