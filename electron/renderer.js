@@ -187,15 +187,12 @@ class Renderer {
         if (fs.existsSync(testPath)) {
             // if a single directory, find the index.js file and include that
             if (fs.statSync(testPath).isDirectory()) {
-
-                let indexFile = pathNode.join(testPath, "index.js");
-
-                console.log("checking for index file: ", indexFile);
-                if (fs.existsSync(indexFile)) {
-                    callback(indexFile);
-                } else {
-                    console.error("no index.js file found in directory: " + testPath);
+                const indexFile = pathNode.join(testPath, "index.js");
+                if (!fs.existsSync(indexFile)) {
+                    console.error(`No index.js file found in directory: ${testPath}`);
                     callback(null);
+                } else {
+                    callback(indexFile);
                 }
             }
             // if it is a single file, only include that file
