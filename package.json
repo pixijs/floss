@@ -1,6 +1,6 @@
 {
   "name": "floss",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Unit-testing for those hard to reach places",
   "bin": "./bin/floss.js",
   "main": "./index.js",
