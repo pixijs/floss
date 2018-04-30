@@ -70,7 +70,7 @@ function createWindow() {
     // not very useful anyway
     if(args.debug) {
         // Open the DevTools.
-        mainWindow.webContents.openDevTools('bottom');
+        mainWindow.webContents.openDevTools({ mode: 'bottom' });
     }
 
     mainWindow.webContents.on('did-finish-load', function() {
