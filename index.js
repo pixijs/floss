@@ -25,6 +25,9 @@ catch(err) {
  * @param {String|Object} [options.reporterOptions] Additional options for the reporter
  *        useful for specifying an output file if using the 'xunit' reporter.
  *        Options can be a querystring format, e.g., `"foo=2&bar=something"`
+ * @param {String[]} [options.args] Additional Electron arguments, can be useful
+ *        for things like disable autoplay gestures, e.g.,
+ *        `["--autoplay-policy=no-user-gesture-required"]`
  * @param {Function} done Called when completed. Passes error if failed.
  */
 function floss(options, done) {
@@ -38,6 +41,7 @@ function floss(options, done) {
     options = assign({
         debug: false,
         quiet: false,
+        args: [],
         electron: process.env.ELECTRON_PATH || electron
     }, options);
 
@@ -68,7 +72,7 @@ function floss(options, done) {
     delete envCopy.ELECTRON_RUN_AS_NODE;
     delete envCopy.ELECTRON_NO_ATTACH_CONSOLE;
     const childProcess = spawn(
-        options.electron, [app, args], {
+        options.electron, [app, args].concat(options.args), {
             stdio: 'pipe',
             env: envCopy
         }

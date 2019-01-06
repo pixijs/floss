@@ -71,6 +71,17 @@ The test code and use the global `options` property to have access to the run op
 console.log(options.customUrl); // logs: http://localhost:8080
 ```
 
+### Electron Arguments
+
+Commandline arguments can be passed to Electron directly by using `args`. In the example below, you may wan to disable Electron's user-gesture policy if you are testing HTML video or audio playback.
+
+```js
+floss({
+    path: 'test/index.js',
+    args: ['--autoplay-policy=no-user-gesture-required']
+}, done);
+```
+
 ## Command Line Usage
 
 ### Arguments
@@ -84,6 +95,7 @@ console.log(options.customUrl); // logs: http://localhost:8080
 * **--coveragePattern** or **-c**  (String) Glob pattern of file source to messure for coverage.
 * **--coverageHtmlReporter** or **-h**  (Boolean) Generatel HTML report for coverage, default `false`.
 * **--coverageSourceMaps** or **-s**  (Boolean) Use sourcemaps to determine coverage, default `false`.
+* **-- [args]** Additional arguments can be passed to Electron after `--`
 
 ### Usage
 
@@ -163,6 +175,14 @@ Can use the same reporter options as the API mentioned above. The `reporterOptio
 floss --path test/index.js \
     --reporter=xunit \
     --reporterOptions output=report.xml
+```
+
+### Electron Arguments
+
+Supports passing additional arguments to Electron after `--`.
+
+```bash
+floss --path test/index.js -- --autoplay-policy=no-user-gesture-required
 ```
 
 ## Custom Electron Version
