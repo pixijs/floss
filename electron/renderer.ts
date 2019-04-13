@@ -1,57 +1,26 @@
 'use strict';
 
-const Mocha = require('mocha');
-const chai = require('chai');
-const sinon = require('sinon');
-const sinonChai = require('sinon-chai');
-const pathNode = require('path');
-const fs = require('fs');
-const resolve = require('resolve');
-const {ipcRenderer, remote} = require('electron');
-const Coverage = require('./coverage');
-const querystring = require('querystring');
+import Mocha = require('mocha');
+import pathNode = require('path');
+import fs = require('fs');
+import resolve = require('resolve');
+import {ipcRenderer, remote} from 'electron';
+import querystring = require('querystring');
 
-require('mocha/mocha');
-require('chai/chai');
-
-global.chai = chai;
-global.sinon = sinon;
-global.should = chai.should;
-global.assert = chai.assert;
-global.expect = chai.expect;
-global.chai.use(sinonChai);
+// require('mocha/mocha');
 
 const globalLoggers = {};
 
 class Renderer {
-
-    constructor(linkId) {
-
-        ipcRenderer.on('ping', (ev, data) => {
-            this.options = global.options = JSON.parse(data);
+    options:any;
+    constructor(linkId:string) {
+        ipcRenderer.on('ping', (_ev:Event, data:string) => {
+            this.options = (global as any).options = JSON.parse(data);
             const {
                 path,
                 debug,
                 quiet,
-                coveragePattern,
-                coverageSourceMaps,
-                coverageHtmlReporter
             } = this.options;
-
-            if (coveragePattern) {
-                const findRoot = require('find-root');
-                const root = findRoot(pathNode.join(
-                    process.cwd(),
-                    path
-                ));
-                this.coverage = new Coverage(
-                    root,
-                    coveragePattern,
-                    coverageSourceMaps,
-                    coverageHtmlReporter,
-                    debug
-                );
-            }
 
             // Do this before to catch any errors outside mocha running
             // for instance errors on the page like test's requires
@@ -66,36 +35,33 @@ class Renderer {
 
         // Add the stylesheet
         const mochaPath = pathNode.dirname(resolve.sync('mocha', {basedir: __dirname}));
-        const link = document.getElementById(linkId);
+        const link = document.getElementById(linkId) as HTMLLinkElement;
         link.href = pathNode.join(mochaPath, 'mocha.css');
     }
 
-    headful(testPath) {
+    headful(testPath:string) {
         mocha.setup({
             ui: 'bdd',
             enableTimeouts: false
         });
 
-        this.addFile(testPath, (pathToAdd) => {
+        this.addFile(testPath, (pathToAdd:string) => {
             if (pathToAdd) {
                 require(pathToAdd);
             }
         });
         mocha.run(() => {
-            if (this.coverage) {
-                this.coverage.report(() => {});
-            }
         });
     }
 
-    headless(testPath) {
+    headless(testPath:string) {
         try {
             mocha.setup({
                 ui: 'tdd'
             });
 
             // Format the reporter options
-            let reporterOptions;
+            let reporterOptions:any;
 
             // Parse string as an object
             if (typeof this.options.reporterOptions === "string") {
@@ -110,7 +76,7 @@ class Renderer {
             });
             mochaInst.ui('tdd');
             mochaInst.useColors(true);
-            this.addFile(testPath, (pathToAdd) => {
+            this.addFile(testPath, (pathToAdd:string) => {
                 if (pathToAdd) {
                     mochaInst.addFile(pathToAdd);
                 }
@@ -119,11 +85,6 @@ class Renderer {
                 try {
                     if (errorCount > 0) {
                         ipcRenderer.send('mocha-error', 'ping');
-                    }
-                    else if (this.coverage) {
-                        this.coverage.report(() => {
-                            ipcRenderer.send('mocha-done', 'ping');
-                        });
                     }
                     else {
                         ipcRenderer.send('mocha-done', 'ping');
@@ -139,18 +100,17 @@ class Renderer {
         }
     }
 
-    setupConsoleOutput(isQuiet, isHeadless) {
+    setupConsoleOutput(isQuiet:boolean, isHeadless:boolean) {
         const remoteConsole = remote.getGlobal('console');
 
         if (isQuiet) {
             if (isHeadless) {
                 console.log = function() {
                     remoteConsole.log.apply(remoteConsole, arguments)
-                }
-
+                };
                 console.dir = function() {
                     remoteConsole.dir.apply(remoteConsole, arguments)
-                }
+                };
             }
         } else if (isHeadless){
             bindConsole();
@@ -159,7 +119,7 @@ class Renderer {
         // if we don't do this, we get socket errors and our tests crash
         Object.defineProperty(process, 'stdout', {
             value: {
-                write: function(str) {
+                write: function(str:string) {
                     remote.process.stdout.write(str);
                 }
             }
@@ -172,7 +132,7 @@ class Renderer {
             for (const name in console) {
                 if (typeof console[name] === 'function') {
                     globalLoggers[name] = console[name];
-                    console[name] = function(...args) {
+                    console[name] = function(...args:any[]) {
                         globalLoggers[name].apply(console, args);
                         ipcRenderer.send(name, args);
                     }
@@ -181,7 +141,7 @@ class Renderer {
         }
     }
 
-    addFile(testPath, callback) {
+    addFile(testPath:string, callback:(path:string)=>void) {
         testPath = pathNode.resolve(testPath);
 
         if (fs.existsSync(testPath)) {

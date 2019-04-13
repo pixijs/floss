@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "es2015",
+        "module": "CommonJS",
+        "moduleResolution": "node",
+        "lib": [
+          "ES2017",
+          "DOM"
+        ]
+    },
+    "include": [
+        "bin/floss.ts",
+        "electron/index.ts",
+        "electron/renderer.ts",
+        "index.ts"
+    ]
+}

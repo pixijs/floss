@@ -1,11 +1,10 @@
 #!/usr/bin/env node
-'use strict';
 
-const commander = require('commander');
-const chalk = require('chalk');
-const floss = require('../');
+import commander = require('commander');
+import chalk from 'chalk';
+import floss = require('../');
 
-function cli(args, callback) {
+function cli(args:string[], callback:(code:number)=>void) {
     const parsedArgs = parseArgs(args);
     // console.log(parsedArgs.coveragePattern);
     if (!parsedArgs.path) {
@@ -27,11 +26,11 @@ function cli(args, callback) {
 /**
  * Split the value by comma or spaces
  */
-function parseList(value) {
+function parseList(value:string) {
     return value.split(/[\s,]\s*/);
 }
 
-function parseArgs(args) {
+function parseArgs(args:string[]) {
     commander.option('-d, --debug', 'Launch electron in debug mode')
         .option('-p, --path [path/to/folder/or/file.js]', 'Either a path to a directory containing index.js or a path to a single test file')
         .option('-e, --electron [path/to/Electron]', 'Path to version of Electron to test on')
