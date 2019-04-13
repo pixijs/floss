@@ -1,4 +1,5 @@
 'use strict';
+const expect = require('chai').expect;
 
 describe('babys first test', ()=>{
   it('should always be true - dummy test', function(){

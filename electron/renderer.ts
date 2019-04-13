@@ -7,7 +7,8 @@ import resolve = require('resolve');
 import {ipcRenderer, remote} from 'electron';
 import querystring = require('querystring');
 
-// require('mocha/mocha');
+// enables the browser mocha support - the mocha global is properly set up
+require('mocha/mocha');
 
 const globalLoggers = {};
 
