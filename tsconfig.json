@@ -6,12 +6,14 @@
         "lib": [
           "ES2017",
           "DOM"
-        ]
+      ],
+      "inlineSourceMap": true
     },
     "include": [
         "bin/floss.ts",
         "electron/index.ts",
         "electron/renderer.ts",
+        "electron/testCoverage.ts",
         "index.ts"
     ]
 }

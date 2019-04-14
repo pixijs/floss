@@ -3,3 +3,4 @@ coverage/
 /bin/*.js
 /electron/*.js
 /*.js
+.nyc_output

@@ -1,5 +1,3 @@
-'use strict';
-
 import Mocha = require('mocha');
 import pathNode = require('path');
 import fs = require('fs');
@@ -9,6 +7,35 @@ import querystring = require('querystring');
 
 // enables the browser mocha support - the mocha global is properly set up
 require('mocha/mocha');
+
+let nycInst:any;
+
+if (process.env.NYC_CONFIG) {
+    // do what nyc does in nyc/bin/wrap.js
+    try {
+        const NYC = require('nyc');
+        let config:any = {};
+        if (process.env.NYC_CONFIG) config = JSON.parse(process.env.NYC_CONFIG);
+        config.isChildProcess = true;
+
+        config._processInfo = {
+            pid: process.pid,
+            ppid: process.ppid,
+            parent: process.env.NYC_PROCESS_ID || null,
+            root: process.env.NYC_ROOT_ID
+        };
+        if (process.env.NYC_PROCESSINFO_EXTERNAL_ID) {
+            config._processInfo.externalId = process.env.NYC_PROCESSINFO_EXTERNAL_ID;
+            delete process.env.NYC_PROCESSINFO_EXTERNAL_ID;
+        }
+
+        nycInst = new NYC(config);
+        nycInst.wrap();
+    }
+    catch (e) {
+        console.log(e);
+    }
+}
 
 const globalLoggers = {};
 
@@ -52,6 +79,7 @@ class Renderer {
             }
         });
         mocha.run(() => {
+            nycInst.writeCoverageFile();
         });
     }
 
@@ -83,6 +111,9 @@ class Renderer {
                 }
             });
             mochaInst.run((errorCount) => {
+                if (nycInst) {
+                    nycInst.writeCoverageFile();
+                }
                 try {
                     if (errorCount > 0) {
                         ipcRenderer.send('mocha-error', 'ping');
@@ -96,6 +127,9 @@ class Renderer {
                 }
             });
         } catch (e) {
+            if (nycInst) {
+                nycInst.writeCoverageFile();
+            }
             console.log(`[floss]: ${e.stack || e.message || e}`);
             ipcRenderer.send('mocha-error', 'ping');
         }
