@@ -90,11 +90,8 @@ floss({
 * **--debug** or **-d**  (Boolean) Enable to run in headful mode, default `false`.
 * **--quiet** or **-q** (Boolean) Prevent console[log/info/error/warn/dir] messages from appearing in `stdout`.
 * **--electron** or **-e**  (String) Path to the electron to use.
-* **--reporter** or **-r**  (String) Mocha reporter type, default `spec`.
-* **--reporterOptions** or **-o**  (String) Mocha reporter options.
-* **--coveragePattern** or **-c**  (String) Glob pattern of file source to messure for coverage.
-* **--coverageHtmlReporter** or **-h**  (Boolean) Generatel HTML report for coverage, default `false`.
-* **--coverageSourceMaps** or **-s**  (Boolean) Use sourcemaps to determine coverage, default `false`.
+* **--reporter** or **-R**  (String) Mocha reporter type, default `spec`.
+* **--reporterOptions** or **-O**  (String) Mocha reporter options.
 * **-- [args]** Additional arguments can be passed to Electron after `--`
 
 ### Usage
@@ -131,40 +128,10 @@ floss --path test/index.js --debug
 
 ### Istanbul Code Coverage
 
-Floss comes with istanbul integration. This will generate a json report.
+Floss supports `nyc`. To use it, just use floss as you would mocha:
 
 ```bash
-floss --path test/index.js --coveragePattern lib/**/*/*.js
-```
-
-To remap the json report using sourcemaps
-
-```bash
-floss --path test/index.js --coveragePattern lib/**/*/*.js --coverageSourceMaps
-```
-
-To generate an additional html report
-
-```bash
-floss --path test/index.js \
-    --coveragePattern lib/**/*/*.js \
-    --coverageHtmlReporter
-```
-
-To generate an additional html report with source maps
-
-```bash
-floss --path test/index.js \
-    --coveragePattern lib/**/*/*.js \
-    --coverageSourceMaps \
-    --coverageHtmlReporter
-```
-
-For lists of globs put the coverage files in quotes comma or space separated
-
-```bash
-floss --path test/index.js \
-    --coveragePattern "lib/**/*/*.js, node_modules/thing/lib/thing.js"
+nyc floss --path test/index.js
 ```
 
 ### Mocha Reporter
