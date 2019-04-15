@@ -1,12 +1,21 @@
 {
   "name": "floss",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "Unit-testing for those hard to reach places",
   "bin": "./bin/floss.js",
   "main": "./index.js",
   "author": "Matt Karl <matt.karl@jibo.com>",
   "contributors": [
-    "Matt Bittarelli <matt.bittarelli@jibo.com>"
+    "Matt Bittarelli <matt.bittarelli@jibo.com>",
+    "Andrew Start <start.andrew@gmail.com>"
+  ],
+  "files": [
+    "index.js",
+    "electron/renderer.js",
+    "electron/index.js",
+    "electron/index.html",
+    "elctron/package.json",
+    "bin/floss.ts"
   ],
   "scripts": {
     "build": "tsc",
