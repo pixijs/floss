@@ -79,7 +79,10 @@ class Renderer {
             }
         });
         mocha.run(() => {
-            nycInst.writeCoverageFile();
+            // write the coverage file if we need to, as NYC won't do so in our setup
+            if (nycInst) {
+                nycInst.writeCoverageFile();
+            }
         });
     }
 
@@ -111,6 +114,7 @@ class Renderer {
                 }
             });
             mochaInst.run((errorCount) => {
+                // write the coverage file if we need to, as NYC won't do so in our setup
                 if (nycInst) {
                     nycInst.writeCoverageFile();
                 }
@@ -127,6 +131,7 @@ class Renderer {
                 }
             });
         } catch (e) {
+            // write the coverage file if we need to, as NYC won't do so in our setup
             if (nycInst) {
                 nycInst.writeCoverageFile();
             }
