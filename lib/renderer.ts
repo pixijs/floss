@@ -114,11 +114,11 @@ class Renderer {
                 }
             });
             mochaInst.run((errorCount) => {
-                // write the coverage file if we need to, as NYC won't do so in our setup
-                if (nycInst) {
-                    nycInst.writeCoverageFile();
-                }
                 try {
+                    // write the coverage file if we need to, as NYC won't do so in our setup
+                    if (nycInst) {
+                        nycInst.writeCoverageFile();
+                    }
                     if (errorCount > 0) {
                         ipcRenderer.send('mocha-error', 'ping');
                     }
