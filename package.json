@@ -21,8 +21,7 @@
     "build": "tsc",
     "test": "node bin/floss.js --path=test/index.js",
     "start": "npm test -- --debug",
-    "test-nyc": "nyc node ./bin/floss.js --path=test/index.js",
-    "report": "nyc report --reporter=html",
+    "test-nyc": "nyc --extension .ts node ./bin/floss.js --path=test/index.js && nyc report --reporter=html --extension .ts",
     "preversion": "npm run build && npm test",
     "postpublish": "git push && git push --tags",
     "publish:patch": "npm version patch && npm publish",
@@ -68,7 +67,7 @@
     "@types/resolve": "0.0.8",
     "chai": "^4.2.0",
     "electron": "^4.1.4",
-    "nyc": "^13.3.0",
+    "nyc": "^14.0.0",
     "typescript": "^3.4.3"
   }
 }
