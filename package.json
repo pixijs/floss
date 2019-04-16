@@ -3,18 +3,18 @@
   "version": "2.2.0",
   "description": "Unit-testing for those hard to reach places",
   "bin": "./bin/floss.js",
-  "main": "./index.js",
+  "main": "./lib/index.js",
   "author": "Matt Karl <matt.karl@jibo.com>",
   "contributors": [
     "Matt Bittarelli <matt.bittarelli@jibo.com>",
     "Andrew Start <start.andrew@gmail.com>"
   ],
   "files": [
-    "index.js",
-    "electron/renderer.js",
-    "electron/index.js",
-    "electron/index.html",
-    "elctron/package.json",
+    "lib/index.js",
+    "lib/renderer.js",
+    "lib/main.js",
+    "lib/index.html",
+    "lib/package.json",
     "bin/floss.ts"
   ],
   "scripts": {
@@ -38,7 +38,7 @@
   },
   "homepage": "https://github.com/pixijs/floss",
   "engines": {
-    "node": ">=4.0"
+    "node": ">=6.0"
   },
   "license": "MIT",
   "keywords": [

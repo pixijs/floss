@@ -53,7 +53,7 @@ function floss(options:string|{path?:string,debug?:boolean,electron?:string,repo
         return done();
     }
 
-    const app = path.join(__dirname, 'electron');
+    const app = path.join(__dirname, 'main');
     const args = JSON.stringify(options);
 
     const isWindows = /^win/.test(process.platform);
