@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "es2015",
+        "module": "CommonJS",
+        "moduleResolution": "node",
+        "lib": [
+          "ES2017",
+          "DOM"
+      ],
+      "inlineSourceMap": true
+    },
+    "include": [
+        "bin/floss.ts",
+        "lib/*.ts",
+        "test-support/testCoverage.ts"
+    ]
+}

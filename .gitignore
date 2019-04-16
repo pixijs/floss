@@ -1,2 +1,6 @@
 node_modules/
 coverage/
+/bin/*.js
+/lib/*.js
+/test-support/*.js
+.nyc_output

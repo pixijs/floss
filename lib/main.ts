@@ -1,15 +1,13 @@
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
-const {app, BrowserWindow, ipcMain} = require('electron');
+import fs = require('fs');
+import path = require('path');
+import {app, BrowserWindow, ipcMain} from 'electron';
 
 // Path to the html render
 const htmlPath = path.join(__dirname, 'index.html');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow = null;
+let mainWindow:BrowserWindow = null;
 
 // Get the configuration path
 const configPath = path.join(app.getPath('userData'), 'config.json');
@@ -32,23 +30,24 @@ app.on('activate', function() {
 });
 
 function createWindow() {
-
     let args = JSON.parse(process.argv.slice(2)[0]);
 
     // Get the window bounds
-    const options = restoreBounds();
+    const options:Electron.BrowserWindowConstructorOptions = restoreBounds();
 
     options.show = args.debug;
+    options.webPreferences = {
+        nodeIntegration: true
+    };
 
     // Create handlers for piping rendered logs to console
     if (!args.debug && !args.quiet) {
         for (let name in console) {
-            ipcMain.on(name, function(event, args) {
+            ipcMain.on(name, function(_event:Event, args:any[]) {
                 console[name](...args);
             })
         }
     }
-
 
     // Create the browser window.
     mainWindow = new BrowserWindow(options);
@@ -92,8 +91,8 @@ function createWindow() {
 /**
  * Restore the bounds of the window.
  */
-function restoreBounds(){
-    let data;
+function restoreBounds():{width:number, height:number} {
+    let data:any;
     try {
         data = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     }
@@ -115,7 +114,7 @@ function restoreBounds(){
 /**
  * Save the bounds of the window.
  */
-function saveBounds(){
+function saveBounds() {
     fs.writeFileSync(configPath, JSON.stringify({
         bounds: mainWindow.getBounds()
     }));

@@ -1,10 +1,8 @@
-'use strict';
+import path = require('path');
+import {spawn} from 'child_process';
+import ElectronType = require('electron');// will be compiled out
 
-const path = require('path');
-const assign = require('object-assign');
-const spawn = require('child_process').spawn;
-
-let electron;
+let electron:typeof ElectronType;
 try {
     electron = require('electron');
 }
@@ -30,7 +28,7 @@ catch(err) {
  *        `["--autoplay-policy=no-user-gesture-required"]`
  * @param {Function} done Called when completed. Passes error if failed.
  */
-function floss(options, done) {
+function floss(options:string|{path?:string,debug?:boolean,electron?:string,reporter?:string,reporterOptions?:any,args?:string[]}, done:(error?:any)=>void) {
 
     if (typeof options === "string") {
         options = {
@@ -38,7 +36,7 @@ function floss(options, done) {
         };
     }
 
-    options = assign({
+    options = Object.assign({
         debug: false,
         quiet: false,
         args: [],
@@ -46,16 +44,16 @@ function floss(options, done) {
     }, options);
 
     if (!options.path) {
-        console.error("Error: No path specified for Floss.".red);
+        console.error("Error: No path specified for Floss.");
         return done();
     }
 
     if (!options.electron) {
-        console.error("Error: Unable to find Electron. Install 'electron' alongside Floss.".red);
+        console.error("Error: Unable to find Electron. Install 'electron' alongside Floss.");
         return done();
     }
 
-    const app = path.join(__dirname, 'electron');
+    const app = path.join(__dirname, 'main');
     const args = JSON.stringify(options);
 
     const isWindows = /^win/.test(process.platform);
@@ -91,4 +89,4 @@ function floss(options, done) {
 // Backward compatibility
 floss.run = floss;
 
-module.exports = floss;
+export = floss;

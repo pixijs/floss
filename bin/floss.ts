@@ -1,11 +1,10 @@
 #!/usr/bin/env node
-'use strict';
 
-const commander = require('commander');
-const chalk = require('chalk');
-const floss = require('../');
+import commander = require('commander');
+import chalk from 'chalk';
+import floss = require('../');
 
-function cli(args, callback) {
+function cli(args:string[], callback:(code:number)=>void) {
     const parsedArgs = parseArgs(args);
     // console.log(parsedArgs.coveragePattern);
     if (!parsedArgs.path) {
@@ -24,22 +23,12 @@ function cli(args, callback) {
     });
 }
 
-/**
- * Split the value by comma or spaces
- */
-function parseList(value) {
-    return value.split(/[\s,]\s*/);
-}
-
-function parseArgs(args) {
+function parseArgs(args:string[]) {
     commander.option('-d, --debug', 'Launch electron in debug mode')
         .option('-p, --path [path/to/folder/or/file.js]', 'Either a path to a directory containing index.js or a path to a single test file')
         .option('-e, --electron [path/to/Electron]', 'Path to version of Electron to test on')
-        .option('-c, --coveragePattern <sources>', 'Glob paths for coverage support', parseList)
-        .option('-s, --coverageSourceMaps', 'Run the coverage report through sourcemap conversion')
-        .option('-h, --coverageHtmlReporter', 'Also generate an html report')
-        .option('-r, --reporter [spec]', 'Mocha reporter for headless mode only')
-        .option('-o, --reporterOptions [filename=report.xml]', 'Additional arguments for reporter options, query-string formatted')
+        .option('-R, --reporter [spec]', 'Mocha reporter for headless mode only')
+        .option('-O, --reporterOptions [filename=report.xml]', 'Additional arguments for reporter options, query-string formatted')
         .option('-q, --quiet', 'Prevent console.(log/info/error/warn) messages from appearing in STDOUT')
         .parse(args);
     return commander;
