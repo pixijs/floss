@@ -15,7 +15,7 @@
     "lib/main.js",
     "lib/index.html",
     "lib/package.json",
-    "bin/floss.ts"
+    "bin/floss.js"
   ],
   "scripts": {
     "build": "tsc",

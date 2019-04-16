@@ -4,3 +4,4 @@ coverage/
 /lib/*.js
 /test-support/*.js
 .nyc_output
+.DS_Store
