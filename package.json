@@ -4,7 +4,7 @@
   "description": "Unit-testing for those hard to reach places",
   "bin": "./bin/floss.js",
   "main": "./lib/index.js",
-  "author": "Matt Karl <matt.karl@jibo.com>",
+  "author": "Matt Karl <matt@mattkarl.com>",
   "contributors": [
     "Matt Bittarelli <matt.bittarelli@jibo.com>",
     "Andrew Start <start.andrew@gmail.com>"
