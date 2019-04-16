@@ -23,7 +23,7 @@
     "start": "npm test -- --debug",
     "test-nyc": "nyc node ./bin/floss.js --path=test/index.js",
     "report": "nyc report --reporter=html",
-    "preversion": "npm test",
+    "preversion": "npm run build && npm test",
     "postpublish": "git push && git push --tags",
     "publish:patch": "npm version patch && npm publish",
     "publish:minor": "npm version minor && npm publish",
