@@ -40,6 +40,9 @@ function createWindow() {
 
     options.show = args.debug;
 
+    // Support Electron v5+
+    options.webPreferences = { nodeIntegration: true };
+
     // Create handlers for piping rendered logs to console
     if (!args.debug && !args.quiet) {
         for (let name in console) {
