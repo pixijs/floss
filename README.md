@@ -2,7 +2,7 @@
 
 Unit-testing for those hard to reach places.
 
-[![Build Status](https://travis-ci.org/pixijs/floss.svg?branch=master)](https://travis-ci.org/pixijs/floss) [![npm version](https://badge.fury.io/js/floss.svg)](https://badge.fury.io/js/floss)
+[![Node.js CI](https://github.com/pixijs/floss/workflows/Node.js%20CI/badge.svg)](https://github.com/pixijs/floss/actions?query=workflow%3A%22Node.js+CI%22) [![npm version](https://badge.fury.io/js/floss.svg)](https://badge.fury.io/js/floss)
 
 Uses Electron to provide a Mocha unit-testing environment which can be run headlessly or to debugged with DevTools. This was largely inspired by the [electron-mocha](https://github.com/jprichardson/electron-mocha) and [mocha-electron](https://github.com/tscanlin/mochatron) projects but didn't quite have the debugging features needed to develop tests.
 
@@ -173,28 +173,38 @@ floss --path test/index.js \
 ELECTRON_PATH=/usr/local/bin/electron floss --path test/index.js
 ```
 
+## GitHub Actions Integration
+
+```yml
+name: Node.js CI
+on:
+  push:
+    branches: [ '**' ]
+    tags: [ '**' ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+    - run: npm install
+    - uses: GabrielBB/xvfb-action@v1.0
+      with:
+        run: npm test
+```
+
 ## Travis Integration
 
 Floss can be used with [Travis CI](https://travis-ci.org/) to run Electron headlessly by utilizing Xvfb. Here's a sample of how to setup this project.
-
-### package.json
-
-Note that scripts `test` must be setup in your **package.json**;
-
-```json
-{
-    "scripts": {
-        "test": "gulp test"
-    }
-}
-```
 
 ### .travis.yml
 
 ```yml
 language: node_js
 node_js:
-    - "4"
+    - "12"
 
 install:
     - npm install xvfb-maybe
