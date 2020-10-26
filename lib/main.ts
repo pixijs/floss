@@ -37,7 +37,8 @@ function createWindow() {
 
     options.show = args.debug;
     options.webPreferences = {
-        nodeIntegration: true
+        nodeIntegration: true,
+        enableRemoteModule: true,
     };
 
     // Create handlers for piping rendered logs to console
