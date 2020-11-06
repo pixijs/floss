@@ -203,17 +203,24 @@ Floss can be used with [Travis CI](https://travis-ci.org/) to run Electron headl
 
 ```yml
 language: node_js
+
 node_js:
     - "12"
 
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+
+env:
+  - CXX=g++-4.8
+
+services:
+    - xvfb
+
 install:
-    - npm install xvfb-maybe
     - npm install
 
-before_script:
-  - export DISPLAY=':99.0'
-  - Xvfb :99 -screen 0 1024x768x24 -extension RANDR &
-
 script:
-    - xvfb-maybe npm test
+    - npm test
 ```
