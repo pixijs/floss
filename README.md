@@ -20,24 +20,15 @@ Install locally within a project:
 npm install floss electron --save-dev
 ```
 
-## Gulp Usage
-
-```js
-const floss = require('floss');
-gulp.task('test', function(done) {
-    floss('test/index.js', done);
-});
-```
-
 ### Debug Mode
 
 Open tests in an Electron window where test can can be debugged with `debugger` and dev tools.
 
 ```js
-floss({
+await floss({
     path: 'test/*.js',
     debug: true
-}, done);
+});
 ```
 
 ### Mocha Reporter
@@ -45,13 +36,13 @@ floss({
 The `reporter` and `reporterOptions` are pass-through options for Mocha to specify a different reporter when running Floss in non-debug mode.
 
 ```js
-floss({
+await floss({
     path: 'test/*.js',
     reporter: 'xunit',
     reporterOptions: {
     	filename: 'report.xml'
     }
-}, done);
+});
 ```
 
 ### Custom Options
@@ -59,10 +50,10 @@ floss({
 Additional properties can be passed to the test code by adding more values to the run options.
 
 ```js
-floss({
+await floss({
     path: 'test/*.js',
     customUrl: 'http://localhost:8080' // <- custom
-}, done);
+});
 ```
 
 The test code and use the global `options` property to have access to the run options.
@@ -76,10 +67,10 @@ console.log(options.customUrl); // logs: http://localhost:8080
 Commandline arguments can be passed to Electron directly by using `args`. In the example below, you may wan to disable Electron's user-gesture policy if you are testing HTML video or audio playback.
 
 ```js
-floss({
+await floss({
     path: 'test/index.js',
     args: ['--autoplay-policy=no-user-gesture-required']
-}, done);
+});
 ```
 
 ## Command Line Usage
