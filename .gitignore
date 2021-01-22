@@ -1,7 +1,6 @@
 node_modules/
-coverage/
-/bin/*.js
-/lib/*.js
-/test-support/*.js
+/coverage
+/lib
+.tsbuildinfo
 .nyc_output
 .DS_Store
