@@ -25,12 +25,13 @@ async function main() {
 
     try {
         const program = await getProgram();
-        const options = program.opts() as Partial<FlossOptions>;
+        const options = program.opts() as FlossOptions;
     
         // Sanitize undefined properties
-        for (const prop in options) {
-            if (options[prop] === undefined) {
-                delete options[prop];
+        for (const prop  in options) {
+            const p = prop as keyof FlossOptions;
+            if (options[p] === undefined) {
+                delete options[p];
             }
         }
 

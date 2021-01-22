@@ -7,21 +7,19 @@ const htmlPath = path.join(__dirname, 'index.html');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow:BrowserWindow = null;
+let mainWindow: BrowserWindow | null;
 
 // Get the configuration path
 const configPath = path.join(app.getPath('userData'), 'config.json');
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-app.on('ready', createWindow.bind(this));
+app.whenReady().then(createWindow);
 
 // Quit when all windows are closed.
-app.on('window-all-closed', function() {
-    app.quit();
-});
+app.on('window-all-closed', () => app.quit());
 
-app.on('activate', function() {
+app.on('activate', () => {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) {
@@ -45,7 +43,7 @@ function createWindow() {
     if (!args.debug && !args.quiet) {
         for (let name in console) {
             ipcMain.on(name, function(_event:Event, args:any[]) {
-                console[name](...args);
+                console[name as keyof Console](...args);
             })
         }
     }
@@ -53,28 +51,24 @@ function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow(options);
 
-    ipcMain.on('mocha-done', function() {
-        process.exit(0);
-    });
-
-    ipcMain.on('mocha-error', function() {
-        process.exit(1);
-    });
+    ipcMain
+        .on('mocha-done', () => process.exit(0))
+        .on('mocha-error', () => process.exit(1));
 
     // and load the index.html of the app.
-    mainWindow.loadURL('file://' + htmlPath);
+    mainWindow.loadFile(htmlPath);
 
     // don't show the dev tools if you're not in headless mode. this is to
     // avoid having breakpoints and "pause on caught / uncaught exceptions" halting
     // the runtime.  plus, if you're in headless mode, having the devtools open is probably
     // not very useful anyway
-    if(args.debug) {
+    if (args.debug) {
         // Open the DevTools.
         mainWindow.webContents.openDevTools({ mode: 'bottom' });
     }
 
     mainWindow.webContents.on('did-finish-load', function() {
-        mainWindow.webContents.send('ping', JSON.stringify(args));
+        mainWindow?.webContents.send('ping', JSON.stringify(args));
     });
 
     // Update bounds
@@ -115,8 +109,6 @@ function restoreBounds():{width:number, height:number} {
 /**
  * Save the bounds of the window.
  */
-function saveBounds() {
-    fs.writeFileSync(configPath, JSON.stringify({
-        bounds: mainWindow.getBounds()
-    }));
-}
+const saveBounds = () => fs.writeFileSync(configPath, JSON.stringify({
+    bounds: mainWindow?.getBounds()
+}));

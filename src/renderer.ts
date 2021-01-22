@@ -1,7 +1,7 @@
 import Mocha = require('mocha');
 import pathNode = require('path');
 import fs = require('fs');
-import resolve = require('resolve');
+import * as resolve from 'resolve';
 import {ipcRenderer, remote} from 'electron';
 import querystring = require('querystring');
 
@@ -37,7 +37,7 @@ if (process.env.NYC_CONFIG) {
     }
 }
 
-const globalLoggers = {};
+const globalLoggers: Partial<Console> = {};
 
 class Renderer {
     options:any;
@@ -73,7 +73,7 @@ class Renderer {
             enableTimeouts: false
         });
 
-        this.addFile(testPath, (pathToAdd:string) => {
+        this.addFile(testPath, (pathToAdd: string | null) => {
             if (pathToAdd) {
                 require(pathToAdd);
             }
@@ -108,7 +108,7 @@ class Renderer {
             });
             mochaInst.ui('tdd');
             mochaInst.useColors(true);
-            this.addFile(testPath, (pathToAdd:string) => {
+            this.addFile(testPath, (pathToAdd: string | null) => {
                 if (pathToAdd) {
                     mochaInst.addFile(pathToAdd);
                 }
@@ -170,10 +170,11 @@ class Renderer {
         // log so we can log to stdout
         function bindConsole() {
             for (const name in console) {
-                if (typeof console[name] === 'function') {
-                    globalLoggers[name] = console[name];
-                    console[name] = function(...args:any[]) {
-                        globalLoggers[name].apply(console, args);
+                const n = name as keyof Console;
+                if (typeof console[n] === 'function') {
+                    globalLoggers[n] = console[n];
+                    console[n] = function(...args:any[]) {
+                        globalLoggers[n].apply(console, args);
                         ipcRenderer.send(name, args);
                     }
                 }
@@ -181,7 +182,7 @@ class Renderer {
         }
     }
 
-    addFile(testPath:string, callback:(path:string)=>void) {
+    addFile(testPath:string, callback:(path: string | null)=>void) {
         testPath = pathNode.resolve(testPath);
 
         if (fs.existsSync(testPath)) {

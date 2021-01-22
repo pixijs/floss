@@ -3,15 +3,14 @@
         "target": "ESNext",
         "module": "CommonJS",
         "moduleResolution": "node",
+        "strict": true,
         "lib": [
           "ESNext",
           "DOM"
         ],
         "declaration": true,
-        "incremental": true,
         "inlineSourceMap": true,
-        "outDir": "lib",
-        "tsBuildInfoFile": ".tsbuildinfo"
+        "outDir": "lib"
     },
     "include": ["src/*.ts"]
 }

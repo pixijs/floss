@@ -12,11 +12,11 @@ catch(err) {
 
 interface FlossOptions {
     path: string,
-    debug: boolean,
-    electron: string,
-    reporter: string,
-    reporterOptions: any,
-    args: string[]
+    debug?: boolean,
+    electron?: string,
+    reporter?: string,
+    reporterOptions?: any,
+    args?: string[]
 }
 
 /**
@@ -37,16 +37,14 @@ interface FlossOptions {
  *        `["--autoplay-policy=no-user-gesture-required"]`
  * @param {Function} done Called when completed. Passes error if failed.
  */
-function floss(options: string | Partial<FlossOptions>): Promise<void> {
+function floss(options: string | FlossOptions): Promise<void> {
 
     if (typeof options === "string") {
         options = { path: options };
     }
 
     const opts: FlossOptions = Object.assign({
-        reporter: undefined,
-        reporterOptions: undefined,
-        path: undefined, 
+        path: '',
         debug: false,
         quiet: false,
         args: [],
@@ -73,7 +71,7 @@ function floss(options: string | Partial<FlossOptions>): Promise<void> {
     delete envCopy.ELECTRON_NO_ATTACH_CONSOLE;
     
     return new Promise((resolve, reject) => {
-        let execPath = opts.electron;
+        let execPath = opts.electron as string;
         // In the case where floss is running in windows with the cmdline option --electron electron
         // options.electron will just be "electron" at this point.
         // Due to limitations with how nodejs spawns windows processes we need to add .cmd to the end of the command
@@ -83,7 +81,7 @@ function floss(options: string | Partial<FlossOptions>): Promise<void> {
             execPath += ".cmd";
         }
         const childProcess = spawn(
-            execPath, [app, args, ...opts.args], {
+            execPath, [app, args, ...opts.args as string[]], {
                 stdio: 'pipe',
                 env: envCopy
             }

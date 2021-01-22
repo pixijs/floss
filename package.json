@@ -14,11 +14,12 @@
     "lib"
   ],
   "scripts": {
+    "types": "tsc -noEmit",
     "copy": "copyfiles -f src/index.html lib",
-    "clean": "rimraf lib/* .tsbuildinfo",
+    "clean": "rimraf lib/*",
     "prebuild": "run-s clean copy",
     "build": "tsc",
-    "watch": "tsc -w",
+    "watch": "tsc -w --incremental --tsBuildInfoFile .tsbuildinfo",
     "test": "run-s test:*",
     "test:basic": "node lib/floss.js -p test/basic",
     "test:coverage": "nyc node lib/floss.js -p test/coverage",
@@ -65,6 +66,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^5.2.6",
+    "@types/resolve": "^1.17.1",
     "chai": "^4.2.0",
     "copyfiles": "^2.4.1",
     "electron": "^10.1.5",
