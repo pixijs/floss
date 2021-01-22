@@ -163,7 +163,7 @@ floss --path "test/*.js" -- --autoplay-policy=no-user-gesture-required
 
 ## Custom Electron Version
 
-Some application may require a specific version of Electron. Floss uses Electron 6.0.0+, but you can specific the path to your own version. The custom version can be used either through the commandline argument `--electron`, by setting the Node environmental variable `ELECTRON_PATH` or by setting the run option `electron`.
+Some application may require a specific version of Electron. Floss uses Electron 10.0.0+, but you can specific the path to your own version. The custom version can be used either through the commandline argument `--electron`, by setting the Node environmental variable `ELECTRON_PATH` or by setting the run option `electron`.
 
 ```bash
 floss --path "test/.js" \
