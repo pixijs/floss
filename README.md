@@ -92,6 +92,7 @@ floss({
 * **--electron** or **-e**  (String) Path to the electron to use.
 * **--reporter** or **-R**  (String) Mocha reporter type, default `spec`.
 * **--reporterOptions** or **-O**  (String) Mocha reporter options.
+* **--require** or **-r** (String) Module to require (e.g., `ts-node/register`).
 * **-- [args]** Additional arguments can be passed to Electron after `--`
 
 ### Usage
@@ -99,13 +100,13 @@ floss({
 Command Line usage when installed globally:
 
 ```bash
-floss --path test/index.js
+floss --path "test/*.js"
 ```
 
 Or installed locally:
 
 ```bash
-node node_modules/.bin/floss --path test/index.js
+node node_modules/.bin/floss --path "test/*.js"
 ```
 
 Alernatively, within the **package.json**'s' scripts:
@@ -113,7 +114,7 @@ Alernatively, within the **package.json**'s' scripts:
 ```json
 {
     "scripts": {
-        "test": "floss --path test/index.js"
+        "test": "floss --path \"test/*.js\""
     }
 }
 ```
@@ -123,7 +124,15 @@ Alernatively, within the **package.json**'s' scripts:
 Open tests in an Electron window where test can can be debugged with `debugger` and dev tools.
 
 ```bash
-floss --path test/index.js --debug
+floss --path "test/*.js" --debug
+```
+
+### Using TypeScript
+
+Support can easily be added for writing tests in TypeScript using [ts-node](https://www.npmjs.com/package/ts-node).
+
+```bash
+floss --path "test/*.ts" --register ts-node/register
 ```
 
 ### Istanbul Code Coverage
@@ -131,7 +140,7 @@ floss --path test/index.js --debug
 Floss supports `nyc`. To use it, just use floss as you would mocha:
 
 ```bash
-nyc floss --path test/index.js
+nyc floss --path "test/*.js"
 ```
 
 ### Mocha Reporter
@@ -139,7 +148,7 @@ nyc floss --path test/index.js
 Can use the same reporter options as the API mentioned above. The `reporterOptions` are expressed as a querystring, for instance `varname=foo&another=bar`.
 
 ```bash
-floss --path test/index.js \
+floss --path "test/*.js" \
     --reporter=xunit \
     --reporterOptions output=report.xml
 ```
@@ -149,28 +158,20 @@ floss --path test/index.js \
 Supports passing additional arguments to Electron after `--`.
 
 ```bash
-floss --path test/index.js -- --autoplay-policy=no-user-gesture-required
+floss --path "test/*.js" -- --autoplay-policy=no-user-gesture-required
 ```
 
 ## Custom Electron Version
 
-Some application may require a specific version of Electron. Floss uses Electron 1.0.0+, but you can specific the path to your own version. The custom version can be used either through the commandline argument `--electron`, by setting the Node environmental variable `ELECTRON_PATH` or by setting the run option `electron`.
+Some application may require a specific version of Electron. Floss uses Electron 6.0.0+, but you can specific the path to your own version. The custom version can be used either through the commandline argument `--electron`, by setting the Node environmental variable `ELECTRON_PATH` or by setting the run option `electron`.
 
-```js
-gulp.task('test', function(done) {
-    floss({
-        path: 'test/index.js',
-        electron: require('electron')
-    }, done);
-});
-```
 ```bash
-floss --path test/index.js \
+floss --path "test/.js" \
 	--electron /usr/local/bin/electron
 ```
 
 ```bash
-ELECTRON_PATH=/usr/local/bin/electron floss --path test/index.js
+ELECTRON_PATH=/usr/local/bin/electron floss --path "test/*.js"
 ```
 
 ## GitHub Actions Integration
@@ -193,34 +194,4 @@ jobs:
     - uses: GabrielBB/xvfb-action@v1.0
       with:
         run: npm test
-```
-
-## Travis Integration
-
-Floss can be used with [Travis CI](https://travis-ci.org/) to run Electron headlessly by utilizing Xvfb. Here's a sample of how to setup this project.
-
-### .travis.yml
-
-```yml
-language: node_js
-
-node_js:
-    - "12"
-
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-
-env:
-  - CXX=g++-4.8
-
-services:
-    - xvfb
-
-install:
-    - npm install
-
-script:
-    - npm test
 ```

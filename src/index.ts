@@ -19,6 +19,7 @@ interface FlossOptions {
     electron?: string,
     reporter?: string,
     reporterOptions?: any,
+    require?: string,
     args?: string[]
 }
 
@@ -31,6 +32,7 @@ interface FlossOptions {
  * @param {String} [options.electron] Path to custom electron version. If undefined
  *        will use environment variable `ELECTRON_PATH` or electron
  *        installed alongside.
+ * @param {String} [options.require] Additional module to require.
  * @param {String} [options.reporter=spec] Mocha reporter (non-debug mode only)
  * @param {String|Object} [options.reporterOptions] Additional options for the reporter
  *        useful for specifying an output file if using the 'xunit' reporter.

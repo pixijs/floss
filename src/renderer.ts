@@ -4,7 +4,9 @@ import * as fs from 'fs';
 import * as resolve from 'resolve';
 import { ipcRenderer, remote } from 'electron';
 import * as querystring from 'querystring';
+import * as glob from 'glob';
 import 'mocha/mocha';
+import { FlossEvent } from './common';
 
 // enables the browser mocha support - the mocha global is properly set up
 // require('mocha/mocha');
@@ -49,28 +51,37 @@ const globalLoggers: Partial<Console> = {};
 class Renderer
 {
     options:any;
-    constructor(linkId:string)
+    constructor(linkId: string)
     {
-        ipcRenderer.on('ping', (_ev:Event, data:string) =>
+        ipcRenderer.on(FlossEvent.Start, (_ev: Event, data: string) =>
         {
             this.options = (global as any).options = JSON.parse(data);
             const {
                 path,
                 debug,
                 quiet,
+                require: additionalRequire,
             } = this.options;
 
             // Do this before to catch any errors outside mocha running
             // for instance errors on the page like test's requires
             this.setupConsoleOutput(quiet, !debug);
 
+            if (additionalRequire)
+            {
+                // eslint-disable-next-line global-require
+                require(additionalRequire);
+            }
+
+            const files = glob.sync(path);
+
             if (debug)
             {
-                this.headful(path);
+                this.headful(files);
             }
             else
             {
-                this.headless(path);
+                this.headless(files);
             }
         });
 
@@ -81,21 +92,22 @@ class Renderer
         link.href = pathNode.join(mochaPath, 'mocha.css');
     }
 
-    headful(testPath:string)
+    /**
+     * Run tests using devtools and Electron window.
+     */
+    private headful(files: string[])
     {
         mocha.setup({
             ui: 'bdd',
             enableTimeouts: false
         });
 
-        this.addFile(testPath, (pathToAdd: string | null) =>
-        {
-            if (pathToAdd)
-            {
-                // eslint-disable-next-line global-require
-                require(pathToAdd);
-            }
-        });
+        files
+            .map((file) => this.addFile(file))
+            .filter((file) => file !== null)
+            // eslint-disable-next-line global-require
+            .forEach((file) => require(file as string));
+
         mocha.run(() =>
         {
             // write the coverage file if we need to, as NYC won't do so in our setup
@@ -106,7 +118,7 @@ class Renderer
         });
     }
 
-    headless(testPath:string)
+    private headless(files:string[])
     {
         try
         {
@@ -132,36 +144,37 @@ class Renderer
 
             mochaInst.ui('tdd');
             mochaInst.useColors(true);
-            this.addFile(testPath, (pathToAdd: string | null) =>
-            {
-                if (pathToAdd)
-                {
-                    mochaInst.addFile(pathToAdd);
-                }
-            });
+
+            files.map((file) => this.addFile(file))
+                .filter((file) => file !== null)
+                .forEach((file) => mochaInst.addFile(file as string));
+
             mochaInst.run((errorCount) =>
             {
-                try
+                // write the coverage file if we need to, as NYC won't do so in our setup
+                if (nycInst)
                 {
-                    // write the coverage file if we need to, as NYC won't do so in our setup
-                    if (nycInst)
+                    try
                     {
                         nycInst.writeCoverageFile();
                     }
-                    if (errorCount > 0)
+                    catch (e)
                     {
-                        ipcRenderer.send('mocha-error', 'ping');
-                    }
-                    else
-                    {
-                        ipcRenderer.send('mocha-done', 'ping');
+                        this.failed('Unable to write coverage file.');
+                        return;
                     }
                 }
-                catch (e)
+
+                if (errorCount > 0)
                 {
-                    console.log(`[floss]: ${e.stack || e.message || e}`);
-                    ipcRenderer.send('mocha-error', 'ping');
+                    // No error needed, Mocha will report this
+                    this.failed();
                 }
+                else
+                {
+                    this.success();
+                }
+                
             });
         }
         catch (e)
@@ -171,16 +184,33 @@ class Renderer
             {
                 nycInst.writeCoverageFile();
             }
-            console.log(`[floss]: ${e.stack || e.message || e}`);
-            ipcRenderer.send('mocha-error', 'ping');
+            this.failed(e.message);
         }
     }
 
-    setupConsoleOutput(isQuiet:boolean, isHeadless:boolean)
+    /**
+     * Report when we're done, this will close floss.
+     */
+    private success()
     {
-        // Create new bindings for `console` functions
-        // Use default console[name] and also send IPC
-        // log so we can log to stdout
+        ipcRenderer.send(FlossEvent.Done);
+    }
+
+    /**
+     * Report if we failed, this will close floss with non-zero errorCode.
+     */
+    private failed(message?: string)
+    {
+        ipcRenderer.send(FlossEvent.Error, message);
+    }
+
+    /**
+     * Create new bindings for `console` functions
+     * Use default console[name] and also send IPC
+     * log so we can log to stdout
+     */
+    private setupConsoleOutput(isQuiet:boolean, isHeadless:boolean)
+    {
         const bindConsole = () =>
         {
             for (const name in console)
@@ -217,41 +247,46 @@ class Renderer
         // if we don't do this, we get socket errors and our tests crash
         Object.defineProperty(process, 'stdout', {
             value: {
-                write(str: string)
-                {
-                    remote.process.stdout.write(str);
-                }
+                write: (str: string) => remote.process.stdout.write(str),
             }
         });
     }
 
-    addFile(testPath:string, callback:(path: string | null)=>void)
+    /**
+     * Resolve test path into absolute path.
+     * @param testPath - Path to test directory of file.
+     */
+    private addFile(testPath:string): string | null
     {
         testPath = pathNode.resolve(testPath);
 
-        if (fs.existsSync(testPath))
+        if (!fs.existsSync(testPath))
         {
-            // if a single directory, find the index.js file and include that
-            if (fs.statSync(testPath).isDirectory())
-            {
-                const indexFile = pathNode.join(testPath, 'index.js');
-
-                if (!fs.existsSync(indexFile))
-                {
-                    console.error(`No index.js file found in directory: ${testPath}`);
-                    callback(null);
-                }
-                else
-                {
-                    callback(indexFile);
-                }
-            }
-            // if it is a single file, only include that file
-            else
-            {
-                callback(testPath);
-            }
+            return null;
         }
+
+        // if a single directory, find the index.js file and include that
+        if (fs.statSync(testPath).isDirectory())
+        {
+            const indexFile = pathNode.join(testPath, 'index.js');
+            const indexTs = pathNode.join(testPath, 'index.ts');
+
+            if (fs.existsSync(indexFile))
+            {
+                return indexFile;
+            }
+            else if (fs.existsSync(indexTs))
+            {
+                return indexTs;
+            }
+
+            console.error(`No index.js file found in directory: ${testPath}`);
+
+            return null;
+        }
+        // if it is a single file, only include that file
+
+        return testPath;
     }
 }
 

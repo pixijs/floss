@@ -1,13 +1,8 @@
-import fs = require('fs');
-import path = require('path');
+import { readFileSync, writeFileSync } from 'fs';
+import * as path from 'path';
 import { app, BrowserWindow, ipcMain } from 'electron';
-
-// Path to the html render
-const htmlPath = path.join(__dirname, 'index.html');
-
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow: BrowserWindow | null;
+import { FlossEvent } from './common';
+import * as chalk from 'chalk';
 
 // Get the configuration path
 const configPath = path.join(app.getPath('userData'), 'config.json');
@@ -15,48 +10,34 @@ const configPath = path.join(app.getPath('userData'), 'config.json');
 /**
  * Restore the bounds of the window.
  */
-const restoreBounds = ():{width:number, height:number} =>
+const restoreBounds = (): Partial<Electron.Rectangle> =>
 {
-    let data:any;
-
     try
     {
-        data = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        return JSON.parse(readFileSync(configPath, 'utf8'));
     }
     catch (e)
     {
-        // do nothing
+        return {
+            width: 1024,
+            height: 768
+        };
     }
-
-    if (data && data.bounds)
-    {
-        return data.bounds;
-    }
-
-    return {
-        width: 1024,
-        height: 768
-    };
 };
-
-/**
- * Save the bounds of the window.
- */
-const saveBounds = () => fs.writeFileSync(configPath, JSON.stringify({
-    bounds: mainWindow?.getBounds()
-}));
 
 const createWindow = () =>
 {
     const args = JSON.parse(process.argv.slice(2)[0]);
 
     // Get the window bounds
-    const options:Electron.BrowserWindowConstructorOptions = restoreBounds();
-
-    options.show = args.debug;
-    options.webPreferences = {
-        nodeIntegration: true,
-        enableRemoteModule: true,
+    const options = {
+        ...restoreBounds(),
+        show: args.debug,
+        background: '#fff',
+        webPreferences: {
+            nodeIntegration: true,
+            enableRemoteModule: true,
+        },
     };
 
     // Create handlers for piping rendered logs to console
@@ -66,19 +47,28 @@ const createWindow = () =>
         {
             const n = name as keyof Console;
 
-            ipcMain.on(n, (_event:Event, args:any[]) => console[n](...args));
+            ipcMain.on(n, (_event: any, args: any[]) => console[n](...args));
         }
     }
 
     // Create the browser window.
-    mainWindow = new BrowserWindow(options);
+    const mainWindow = new BrowserWindow(options);
 
     ipcMain
-        .on('mocha-done', () => process.exit(0))
-        .on('mocha-error', () => process.exit(1));
+        .on(FlossEvent.Done, () => process.exit(0))
+        .on(FlossEvent.Error, (_event: any, message: string) => 
+        {
+            if (message)
+            {
+                console.error(chalk.red(`\n[floss] Error: ${message}\n`));
+            }
+            process.exit(1);
+        });
 
     // and load the index.html of the app.
-    mainWindow.loadFile(htmlPath);
+    mainWindow.loadFile(path.join(__dirname, 'index.html'));
+
+    const { webContents } = mainWindow;
 
     // don't show the dev tools if you're not in headless mode. this is to
     // avoid having breakpoints and "pause on caught / uncaught exceptions" halting
@@ -86,25 +76,17 @@ const createWindow = () =>
     // not very useful anyway
     if (args.debug)
     {
-        // Open the DevTools.
-        mainWindow.webContents.openDevTools({ mode: 'bottom' });
+        webContents.openDevTools({ mode: 'bottom' });
     }
 
-    mainWindow.webContents.on('did-finish-load', () =>
+    webContents.on('did-finish-load', () =>
     {
-        mainWindow?.webContents.send('ping', JSON.stringify(args));
+        webContents.send(FlossEvent.Start, JSON.stringify(args));
     });
 
-    // Update bounds
-    mainWindow.on('close', saveBounds);
-
-    // Emitted when the window is closed.
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow.on('closed', () =>
+    mainWindow.on('close', () =>
     {
-        mainWindow = null;
+        writeFileSync(configPath, JSON.stringify(mainWindow.getBounds()));
     });
 };
 
@@ -114,13 +96,3 @@ app.whenReady().then(createWindow);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => app.quit());
-
-app.on('activate', () =>
-{
-    // On OS X it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (mainWindow === null)
-    {
-        createWindow();
-    }
-});

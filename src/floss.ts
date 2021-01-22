@@ -17,6 +17,7 @@ const getProgram = () =>
         .option('-R, --reporter [spec]', 'Mocha reporter for headless mode only')
         .option('-O, --reporterOptions [filename=report.xml]', 'Additional arguments for reporter '
             + 'options, query-string formatted')
+        .option('-r, --require [module]', 'Require module')
         .option('-q, --quiet', 'Prevent console.(log/info/error/warn) messages from appearing in STDOUT')
         .parseAsync(process.argv);
 
@@ -29,6 +30,8 @@ async function main()
     {
         const program = await getProgram();
         const options = program.opts() as FlossOptions;
+
+        options.args = [...program.args];
 
         // Sanitize undefined properties
         for (const prop in options)
@@ -46,7 +49,7 @@ async function main()
     }
     catch (err)
     {
-        console.log(chalk.red(`[floss] error: ${err.message}`));
+        // console.log(chalk.red(`[floss] Error: ${err.message}`));
         process.exit(1);
     }
 }
