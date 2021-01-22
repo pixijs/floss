@@ -35,7 +35,7 @@ Open tests in an Electron window where test can can be debugged with `debugger` 
 
 ```js
 floss({
-    path: 'test/index.js',
+    path: 'test/*.js',
     debug: true
 }, done);
 ```
@@ -46,7 +46,7 @@ The `reporter` and `reporterOptions` are pass-through options for Mocha to speci
 
 ```js
 floss({
-    path: 'test/index.js',
+    path: 'test/*.js',
     reporter: 'xunit',
     reporterOptions: {
     	filename: 'report.xml'
@@ -60,7 +60,7 @@ Additional properties can be passed to the test code by adding more values to th
 
 ```js
 floss({
-    path: 'test/index.js',
+    path: 'test/*.js',
     customUrl: 'http://localhost:8080' // <- custom
 }, done);
 ```
