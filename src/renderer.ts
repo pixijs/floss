@@ -161,6 +161,7 @@ class Renderer
                     catch (e)
                     {
                         this.failed('Unable to write coverage file.');
+
                         return;
                     }
                 }
@@ -174,7 +175,6 @@ class Renderer
                 {
                     this.success();
                 }
-                
             });
         }
         catch (e)

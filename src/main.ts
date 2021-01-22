@@ -56,7 +56,7 @@ const createWindow = () =>
 
     ipcMain
         .on(FlossEvent.Done, () => process.exit(0))
-        .on(FlossEvent.Error, (_event: any, message: string) => 
+        .on(FlossEvent.Error, (_event: any, message: string) =>
         {
             if (message)
             {
