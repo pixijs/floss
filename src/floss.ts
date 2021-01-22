@@ -10,27 +10,33 @@ import type { FlossOptions } from './';
  */
 const getProgram = () =>
     commander
-        .requiredOption('-p, --path [path/to/folder/or/file.js]', 'Either a path to a directory containing index.js or a path to a single test file')
+        .requiredOption('-p, --path [path/to/folder/or/file.js]', 'Either a path to a directory '
+            + 'containing index.js or a path to a single test file')
         .option('-d, --debug', 'Launch electron in debug mode')
         .option('-e, --electron [path/to/Electron]', 'Path to version of Electron to test on')
         .option('-R, --reporter [spec]', 'Mocha reporter for headless mode only')
-        .option('-O, --reporterOptions [filename=report.xml]', 'Additional arguments for reporter options, query-string formatted')
+        .option('-O, --reporterOptions [filename=report.xml]', 'Additional arguments for reporter '
+            + 'options, query-string formatted')
         .option('-q, --quiet', 'Prevent console.(log/info/error/warn) messages from appearing in STDOUT')
         .parseAsync(process.argv);
 
 /**
  * Main entry-point for the CLI
  */
-async function main() {
-
-    try {
+async function main()
+{
+    try
+    {
         const program = await getProgram();
         const options = program.opts() as FlossOptions;
-    
+
         // Sanitize undefined properties
-        for (const prop  in options) {
+        for (const prop in options)
+        {
             const p = prop as keyof FlossOptions;
-            if (options[p] === undefined) {
+
+            if (options[p] === undefined)
+            {
                 delete options[p];
             }
         }
@@ -38,7 +44,8 @@ async function main() {
         await floss(options);
         process.exit(0);
     }
-    catch(err) {
+    catch (err)
+    {
         console.log(chalk.red(`[floss] error: ${err.message}`));
         process.exit(1);
     }

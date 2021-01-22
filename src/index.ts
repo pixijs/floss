@@ -1,12 +1,15 @@
-import path = require('path');
-import {spawn} from 'child_process';
-import ElectronType = require('electron');// will be compiled out
+import * as path from 'path';
+import { spawn } from 'child_process';
 
-let electron:typeof ElectronType;
-try {
+let electron: string;
+
+try
+{
+    // eslint-disable-next-line global-require
     electron = require('electron');
 }
-catch(err) {
+catch (err)
+{
     // silence is golden
 }
 
@@ -37,9 +40,10 @@ interface FlossOptions {
  *        `["--autoplay-policy=no-user-gesture-required"]`
  * @param {Function} done Called when completed. Passes error if failed.
  */
-function floss(options: string | FlossOptions): Promise<void> {
-
-    if (typeof options === "string") {
+function floss(options: string | FlossOptions): Promise<void>
+{
+    if (typeof options === 'string')
+    {
         options = { path: options };
     }
 
@@ -51,34 +55,41 @@ function floss(options: string | FlossOptions): Promise<void> {
         electron: process.env.ELECTRON_PATH || electron
     }, options);
 
-    if (!opts.path) {
-        throw new Error("No path specified for Floss.");
+    if (!opts.path)
+    {
+        throw new Error('No path specified for Floss.');
     }
-    else if (typeof opts.path !== "string") {
+    else if (typeof opts.path !== 'string')
+    {
         throw new Error('Path type is not a string');
     }
 
-    if (!opts.electron) {
-        throw new Error("Unable to find Electron. Install 'electron' alongside Floss.");
+    if (!opts.electron)
+    {
+        throw new Error('Unable to find Electron. Install \'electron\' alongside Floss.');
     }
 
     const app = path.join(__dirname, 'main');
     const args = JSON.stringify(opts);
 
-    //copy the environment and remove things that would prevent Floss from running properly
+    // copy the environment and remove things that would prevent Floss from running properly
     const envCopy = Object.assign({}, process.env);
+
     delete envCopy.ELECTRON_RUN_AS_NODE;
     delete envCopy.ELECTRON_NO_ATTACH_CONSOLE;
-    
-    return new Promise((resolve, reject) => {
+
+    return new Promise((resolve, reject) =>
+    {
         let execPath = opts.electron as string;
         // In the case where floss is running in windows with the cmdline option --electron electron
         // options.electron will just be "electron" at this point.
         // Due to limitations with how nodejs spawns windows processes we need to add .cmd to the end of the command
         // https://github.com/nodejs/node/issues/3675
-        const isWindows = /^win/.test(process.platform);
-        if (isWindows && !path.extname(execPath)) {
-            execPath += ".cmd";
+        const isWindows = (/^win/).test(process.platform);
+
+        if (isWindows && !path.extname(execPath))
+        {
+            execPath += '.cmd';
         }
         const childProcess = spawn(
             execPath, [app, args, ...opts.args as string[]], {
@@ -86,14 +97,21 @@ function floss(options: string | FlossOptions): Promise<void> {
                 env: envCopy
             }
         );
-        childProcess.stdout.on('data', (data) => {
+
+        childProcess.stdout.on('data', (data) =>
+        {
             process.stdout.write(data);
         });
-        childProcess.on('close', (code) => {
-            if (code !== 0) {
-                return reject(new Error('Mocha tests failed.'));
+        childProcess.on('close', (code) =>
+        {
+            if (code !== 0)
+            {
+                reject(new Error('Mocha tests failed.'));
             }
-            resolve();
+            else
+            {
+                resolve();
+            }
         });
     });
 }
