@@ -48,7 +48,6 @@ async function main()
     }
     catch (err)
     {
-        // console.log(chalk.red(`[floss] Error: ${err.message}`));
         process.exit(1);
     }
 }
