@@ -20,6 +20,7 @@
     "clean": "rimraf lib/*",
     "prebuild": "run-s clean lint copy",
     "build": "tsc",
+    "prewatch": "run-s copy",
     "watch": "tsc -w --incremental --tsBuildInfoFile .tsbuildinfo",
     "test": "run-s test:*",
     "test:basic": "node lib/floss.js -p test/basic",
