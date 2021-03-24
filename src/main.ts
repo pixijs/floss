@@ -41,17 +41,6 @@ const createWindow = () =>
         },
     };
 
-    // Create handlers for piping rendered logs to console
-    if (!args.debug && !args.quiet)
-    {
-        for (const name in console)
-        {
-            const n = name as keyof Console;
-
-            ipcMain.on(n, (_event: any, args: any[]) => console[n](...args));
-        }
-    }
-
     // Create the browser window.
     const mainWindow = new BrowserWindow(options);
 

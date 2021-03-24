@@ -1,11 +1,9 @@
-import * as Mocha from 'mocha';
 import * as pathNode from 'path';
 import * as fs from 'fs';
 import * as resolve from 'resolve';
 import { ipcRenderer, remote } from 'electron';
 import * as querystring from 'querystring';
 import * as glob from 'glob';
-import 'mocha/mocha';
 import { FlossEvent } from './common';
 
 // enables the browser mocha support - the mocha global is properly set up
@@ -46,8 +44,6 @@ if (process.env.NYC_CONFIG)
     }
 }
 
-const globalLoggers: Partial<Console> = {};
-
 class Renderer
 {
     options:any;
@@ -66,6 +62,11 @@ class Renderer
             // Do this before to catch any errors outside mocha running
             // for instance errors on the page like test's requires
             this.setupConsoleOutput(quiet, !debug);
+
+            // Include this AFTER the console binding because
+            // mocha has a static console reference in the base reporter
+            // eslint-disable-next-line global-require
+            require('mocha/mocha');
 
             if (additionalRequire)
             {
@@ -99,7 +100,7 @@ class Renderer
     {
         mocha.setup({
             ui: 'bdd',
-            enableTimeouts: false
+            timeout: 0
         });
 
         files
@@ -123,7 +124,7 @@ class Renderer
         try
         {
             mocha.setup({
-                ui: 'tdd'
+                ui: 'bdd',
             });
 
             // Format the reporter options
@@ -137,19 +138,19 @@ class Renderer
                 );
             }
 
+            // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+            const Mocha = require('mocha');
             const mochaInst = new Mocha({
                 reporter: this.options.reporter,
-                reporterOptions
+                reporterOptions,
+                color: true,
             });
-
-            mochaInst.ui('tdd');
-            mochaInst.useColors(true);
 
             files.map((file) => this.addFile(file))
                 .filter((file) => file !== null)
                 .forEach((file) => mochaInst.addFile(file as string));
 
-            mochaInst.run((errorCount) =>
+            mochaInst.run((errorCount: number) =>
             {
                 // write the coverage file if we need to, as NYC won't do so in our setup
                 if (nycInst)
@@ -211,7 +212,9 @@ class Renderer
      */
     private setupConsoleOutput(isQuiet:boolean, isHeadless:boolean)
     {
-        const bindConsole = () =>
+        const remoteConsole = remote.getGlobal('console');
+
+        if (!isQuiet && isHeadless)
         {
             for (const name in console)
             {
@@ -219,29 +222,9 @@ class Renderer
 
                 if (typeof console[n] === 'function')
                 {
-                    globalLoggers[n] = console[n];
-                    console[n] = (...args: any[]) =>
-                    {
-                        globalLoggers[n].apply(console, args);
-                        ipcRenderer.send(name, args);
-                    };
+                    console[n] = remoteConsole[n];
                 }
             }
-        };
-
-        const remoteConsole = remote.getGlobal('console');
-
-        if (isQuiet)
-        {
-            if (isHeadless)
-            {
-                console.log = (...args: any[]) => remoteConsole.log(...args);
-                console.dir = (...args: any[]) => remoteConsole.dir(...args);
-            }
-        }
-        else if (isHeadless)
-        {
-            bindConsole();
         }
 
         // if we don't do this, we get socket errors and our tests crash

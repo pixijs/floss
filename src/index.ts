@@ -5,8 +5,8 @@ let electron: string;
 
 try
 {
-    // eslint-disable-next-line global-require
-    electron = require('electron');
+    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+    electron = require('electron') as unknown as string;
 }
 catch (err)
 {
