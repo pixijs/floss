@@ -123,7 +123,7 @@ floss --path "test/*.js" --debug
 Support can easily be added for writing tests in TypeScript using [ts-node](https://www.npmjs.com/package/ts-node).
 
 ```bash
-floss --path "test/*.ts" --register ts-node/register
+floss --path "test/*.ts" --require ts-node/register
 ```
 
 ### Istanbul Code Coverage
