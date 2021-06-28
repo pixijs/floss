@@ -68,7 +68,7 @@
     "resolve": "^1.19.0"
   },
   "peerDependencies": {
-    "electron": ">=12",
+    "electron": ">=12 <14",
     "nyc": ">=13"
   },
   "devDependencies": {
