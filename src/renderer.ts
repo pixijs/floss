@@ -1,7 +1,8 @@
 import * as pathNode from 'path';
 import * as fs from 'fs';
 import * as resolve from 'resolve';
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer } from 'electron';
+import * as remote from '@electron/remote';
 import * as querystring from 'querystring';
 import * as glob from 'glob';
 import { FlossEvent } from './common';

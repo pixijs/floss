@@ -1,8 +1,11 @@
 import { readFileSync, writeFileSync } from 'fs';
 import * as path from 'path';
 import { app, BrowserWindow, ipcMain } from 'electron';
+import * as remote from '@electron/remote/main';
 import { FlossEvent } from './common';
 import * as chalk from 'chalk';
+
+remote.initialize();
 
 // Get the configuration path
 const configPath = path.join(app.getPath('userData'), 'config.json');
@@ -59,6 +62,10 @@ const createWindow = () =>
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
     const { webContents } = mainWindow;
+
+    // Use the new enable API to enable the remote module for
+    // each desired WebContents separately.
+    remote.enable(webContents);
 
     // don't show the dev tools if you're not in headless mode. this is to
     // avoid having breakpoints and "pause on caught / uncaught exceptions" halting
